@@ -1,6 +1,6 @@
-<p>
-    To reset your password
-    <a href="{{ url_for('auth.reset_verified', user=user, token=token, _external=True) }}">
-        click here
-    </a>.
+<p>&iexcl;Hola! &iquest;Has olvidado tus datos de acceso? No te preocupes, aqu&iacute; puedes recuperarlos:</p>
+<p style="text-align: center;"><strong>Usuario:&nbsp;</strong>{{ user.username }}</p>
+<p style="text-align: center;"><strong>Contrase&ntilde;a: <a
+            href="{{ url_for('auth.reset_verified', user=user, token=token, _external=True) }}">Restablecer</a></strong>
 </p>
+<p></p>

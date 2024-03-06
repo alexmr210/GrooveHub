@@ -32,7 +32,18 @@ Restablecer contraseña
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-field d-flex align-items-center">
             <span class="fas fa-key"></span>
-            <input type="password" name="password" id="password" placeholder="Contraseña" required>
+            <input type="password" name="password" id="password" placeholder="Contraseña"
+                pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}"
+                oninvalid="this.setCustomValidity('La contraseña debe tener al menos 8 caracteres e incluir al menos un número y una letra')"
+                oninput="this.setCustomValidity('')" required>
+        </div>
+        <div class="form-field d-flex align-items-center">
+            <span class="fas fa-key"></span>
+            <input type="password" name="password2" id="password2" placeholder="Confirmar contraseña" required
+                pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}"
+                oninvalid="this.setCustomValidity('Las contraseñas deben coincidir')"
+                oninput="this.setCustomValidity('')" required>
+            <input type="hidden" id="hidden_password" value="{{password}}">
         </div>
         <button class="btn mt-3" type="submit">Entrar</button>
     </form>
