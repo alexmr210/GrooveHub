@@ -1,0 +1,14 @@
+{% extends './layout.html' %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth/login.css') }}">
+{% endblock %}
+
+{% block body %}
+<h1>Bienvenido, {{ current_user.name }}</h1>
+<a class="btn btn-secondaryt" href="{{ url_for('auth.logout') }}">Log out</a>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends './auth/auth_layout.html' %}
+
+{% block title %}
+Restablecer contraseña
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth/login.css') }}">
+{% endblock %}
+
+{% block body %}
+
+<div class="wrapper">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="">
+    </div>
+    <div class="text-center mt-4 name">
+        Introduce una nueva contraseña
+    </div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <br />
+    {% for message in messages %}
+    <div class="alert alert-primary alert-dismissible" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <form class="p-3 mt-3" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-field d-flex align-items-center">
+            <span class="fas fa-key"></span>
+            <input type="password" name="password" id="password" placeholder="Contraseña" required>
+        </div>
+        <button class="btn mt-3" type="submit">Entrar</button>
+    </form>
+</div>
+{% endblock %}
