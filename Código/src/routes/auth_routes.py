@@ -53,7 +53,7 @@ def reset_password():
         if user:
             send_reset_email(user)
             flash(
-                "Revisa tu bandeja de entrada, te hemos enviado un correo electrónico para restablecer tu contraseña"
+                "Te hemos enviado un correo electrónico para restablecer tu contraseña"
             )
             return render_template("auth/login.html")
         else:

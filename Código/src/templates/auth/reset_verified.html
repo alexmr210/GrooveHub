@@ -4,48 +4,38 @@
 Restablecer contraseña
 {% endblock %}
 
-{% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/auth/login.css') }}">
-{% endblock %}
-
 {% block body %}
-
-<div class="wrapper">
-    <div class="logo">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="">
-    </div>
-    <div class="text-center mt-4 name">
-        Introduce una nueva contraseña
-    </div>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <br />
-    {% for message in messages %}
-    <div class="alert alert-primary alert-dismissible" role="alert">
-        <strong>{{ message }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-    <form class="p-3 mt-3" method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="form-field d-flex align-items-center">
-            <span class="fas fa-key"></span>
+<div class="text-center mt-4 name">
+    Recuperar contraseña
+</div>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert" role="alert">
+    <p>{{ message }}</p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form">
+        <div class="password">
             <input type="password" name="password" id="password" placeholder="Contraseña"
                 pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}"
                 oninvalid="this.setCustomValidity('La contraseña debe tener al menos 8 caracteres e incluir al menos un número y una letra')"
                 oninput="this.setCustomValidity('')" required>
+            <button type="button" class="btn-password btn-password-show" onclick="showPassword()"
+                id="password-button"></button>
         </div>
-        <div class="form-field d-flex align-items-center">
-            <span class="fas fa-key"></span>
-            <input type="password" name="password2" id="password2" placeholder="Confirmar contraseña" required
-                pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}"
-                oninvalid="this.setCustomValidity('Las contraseñas deben coincidir')"
-                oninput="this.setCustomValidity('')" required>
-            <input type="hidden" id="hidden_password" value="{{password}}">
+        <div class="password">
+            <input type="password" name="password2" id="password2" placeholder="Confirmar contraseña"
+                onchange="validatePassword()">
+            <button type="button" class="btn-password btn-password-show" onclick="showPassword2()"
+                id="password2-button"></button>
         </div>
-        <button class="btn mt-3" type="submit">Entrar</button>
-    </form>
-</div>
+        <button class="btn-submit" type="submit">Cambiar</button>
+    </div>
+</form>
 {% endblock %}

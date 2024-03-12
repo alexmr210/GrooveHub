@@ -1,6 +1,17 @@
-<p>&iexcl;Hola! &iquest;Has olvidado tus datos de acceso? No te preocupes, aqu&iacute; puedes recuperarlos:</p>
-<p style="text-align: center;"><strong>Usuario:&nbsp;</strong>{{ user.username }}</p>
-<p style="text-align: center;"><strong>Contrase&ntilde;a: <a
-            href="{{ url_for('auth.reset_verified', user=user, token=token, _external=True) }}">Restablecer</a></strong>
-</p>
-<p></p>
+<h1>Recuperación de claves</h1>
+<p>¿Has olvidado tus claves de acceso? ¡No te preocupes! Te ayudamos a recuperarlas.</p>
+<p>Te recordamos que tu usuario es <strong>{{ user.username }}</strong>. Para recuperar tu contraseña pulsa en el
+    siguiente botón:</p>
+<a href="{{ url_for('auth.reset_verified', user=user, token=token, _external=True) }}" style="height: auto;
+            display: block;
+            position: relative;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+            background-color: #EBB446;
+            margin: 10px 0;
+            width: fit-content;
+            font-size: 1.1em;
+            padding: 3px 10px;
+            border-radius: 3rem;
+            border-style: none;">Restablecer contraseña</a>

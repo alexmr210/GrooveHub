@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --oscuro1: #020c12;
+    --oscuro2: #062337;
+    --oscuro3: #0A3B5C;
+    --claro1: #ddd;
+    --claro2: #b8b8b8;
+    --naranja1: #EBB446;
+    --naranja2: #FF6F59;
+    --naranja3: #F9EFC8;
+    --fuente1: "Poppins", sans-serif;
+}
+
+* {
+    font-family: var(--fuente1);
+    margin: 0;
+}
+
+body {
+    background-color: var(--claro1);
+    margin: 0;
+}
+
+.body-container {
+    padding: 2em 3em;
+}
+
+.navbar nav {
+    background-color: var(--oscuro1);
+    width: 100%;
+    height: auto;
+    color: var(--claro1);
+    display: flex;
+}
+
+.nav-logo {
+    margin: 0 7px;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.nav-logo img {
+    height: 2.8em;
+    max-height: 80px;
+}
+
+.nav-links,
+.nav-user ul,
+footer ul {
+    list-style: none;
+    font-size: 1.3rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.nav-user {
+    margin-left: auto;
+}
+
+.nav-links li,
+footer ul li {
+    display: inline-block;
+    position: relative;
+    text-align: center;
+}
+
+.nav-links li a,
+footer ul li a {
+    display: block;
+    position: relative;
+    padding: 1em;
+    text-decoration: none;
+    color: var(--claro1);
+    text-align: center;
+}
+
+.nav-user ul li a {
+    display: block;
+    position: relative;
+    padding: 1em;
+    text-decoration: none;
+    color: var(--claro1);
+    text-align: end;
+    min-width: 12em;
+}
+
+.nav-user ul li .dropdown li {
+    display: block;
+    margin: 1px 0px;
+    background: var(--oscuro1);
+}
+
+.nav-user ul li .dropdown li:first-child {
+    margin: 0px 0px;
+}
+
+.nav-user ul li .dropdown {
+    padding: 0;
+    position: absolute;
+    width: auto;
+    display: none;
+    z-index: 999;
+    background: var(--oscuro2);
+}
+
+.nav-user ul li:hover .dropdown {
+    display: block;
+}
+
+.nav-links li a:hover,
+.nav-user li a:hover,
+footer ul li a:hover {
+    background: var(--oscuro2);
+}
+
+.nav-logo:hover {
+    background: var(--oscuro1) !important;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin-top: 1.5rem;
+    padding-top: 0.4rem;
+    background-color: var(--oscuro1);
+    color: var(--claro1);
+}
+
+.footer img {
+    justify-self: center;
+    height: 4rem;
+}
+
+.footer ul {
+    justify-self: end;
+    font-size: 1em;
+}
+
+.footer p {
+    font-size: 0.8em;
+}
+
+.footer {
+    border-top: 3px solid var(--oscuro2);
+    padding: 0.5rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+}

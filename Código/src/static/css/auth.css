@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --oscuro1: #020c12;
+    --oscuro2: #062337;
+    --oscuro3: #0A3B5C;
+    --claro1: #ddd;
+    --claro2: #b8b8b8;
+    --naranja1: #EBB446;
+    --naranja2: #FF6F59;
+    --naranja3: #F9EFC8;
+    --fuente1: "Poppins", sans-serif;
+}
+
+* {
+    font-family: var(--fuente1);
+    margin: 0;
+}
+
+body {
+    background-color: var(--oscuro1);
+    margin: 0;
+}
+
+.body-container {
+    width: 100%;
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin-top: 1.5rem;
+    padding-top: 0.4rem;
+    background-color: var(--oscuro1);
+    color: var(--claro1);
+}
+
+.footer img {
+    justify-self: center;
+    height: 4rem;
+}
+
+.footer ul {
+    justify-self: end;
+    font-size: 1em;
+}
+
+.footer p {
+    font-size: 0.8em;
+}
+
+.footer {
+    border-top: 3px solid var(--oscuro2);
+    padding: 0.5rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+}
+
+footer ul li a:hover {
+    background: var(--oscuro2);
+}
+
+footer ul li a {
+    display: block;
+    position: relative;
+    padding: 1em;
+    text-decoration: none;
+    color: var(--claro1);
+    text-align: center;
+}
+
+footer ul li {
+    display: inline-block;
+    position: relative;
+    text-align: center;
+}
+
+footer ul {
+    list-style: none;
+    font-size: 1.3rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.box {
+    background-color: var(--claro1);
+    width: fit-content;
+    max-width: 25rem;
+    min-width: 290px;
+    height: fit-content;
+    border-radius: 2rem;
+    box-shadow: 0 0 10px 1px var(--oscuro3);
+    text-align: center;
+    padding: 1em;
+    margin: 15px;
+}
+
+.logo {
+    margin-top: 10px;
+    align-self: center;
+    text-align: center;
+}
+
+.logo img {
+    height: 7rem;
+}
+
+.divisor {
+    height: 1px;
+    background-color: var(--claro2);
+    width: 80%;
+    margin: 4px auto;
+}
+
+.auth-title {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form input {
+    margin: 3.5px 0;
+    width: 80%;
+    font-size: 1.1em;
+    padding: 3px 10px;
+    border-radius: 3rem;
+    border-style: solid;
+    border-color: var(--claro2);
+}
+
+.form .btn-submit {
+    background-color: var(--naranja1);
+    margin: 10px 0;
+    width: 80%;
+    font-size: 1.1em;
+    padding: 3px 10px;
+    border-radius: 3rem;
+    border-style: none;
+    transition-duration: 0.3s;
+}
+
+.form .btn-submit:hover {
+    background-color: var(--naranja2);
+    transform: scale(1.05);
+}
+
+.form input:focus {
+    border-style: solid;
+    outline: none;
+    border-color: var(--naranja1);
+}
+
+.links a {
+    text-decoration: none;
+    color: var(--oscuro2);
+    transition-duration: 0.3s;
+}
+
+.links a:hover {
+    font-size: 1.02rem;
+}
+
+.alert {
+    padding-right: 3rem;
+    position: relative;
+    padding: 1rem 1rem;
+    
+    color: var(--naranja2);
+    background-color: var(--naranja3);
+    border: 2px solid var(--naranja1);
+    border-radius: 0.375rem;
+    max-width: 77%;
+    margin: auto;
+    margin-bottom: 1rem;
+
+}
+
+.alert p {
+    text-align: center;
+    font-weight: bold;
+    margin: 0;
+    max-width: calc(100% - 2.5rem);
+    position: relative;
+}
+
+.btn-close {
+    box-sizing: content-box;
+    display: block;
+    width: 1em;
+    height: 1em;
+    padding: 0.25em 0.25em;
+    color: var(--naranja1);
+    background: transparent url(../img/close.svg) center/1em auto no-repeat;
+    border: 0;
+    border-radius: 0.375rem;
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    padding: 1.25rem 1rem;
+    transition-duration: 0.3s;
+}
+
+.btn-close:hover {
+    transform: scale(1.2);
+}
+
+.password {
+    width: 100%;
+    position: relative;
+}
+
+.btn-password-show {
+    background: transparent url(../img/eye-open.svg) center/1.6em auto no-repeat;
+}
+
+.btn-password-hide {
+    background: transparent url(../img/eye-closed.svg) center/1.6em auto no-repeat;
+}
+
+.btn-password:hover {
+    transform: scale(1.05);
+    opacity: 0.5;
+}
+
+.btn-password {
+    cursor: pointer;
+    box-sizing: content-box;
+    display: block;
+    width: 1.6em;
+    height: 1.6em;
+    padding: 0 0;
+    padding-right: 20%;
+    padding-top: 1.5em;
+    color: var(--naranja1);
+    border: 0;
+    border-radius: 0.375rem;
+    opacity: 0.4;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    transition-duration: 0.3s;
+}

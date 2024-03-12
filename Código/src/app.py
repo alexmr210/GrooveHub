@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_wtf import CSRFProtect
 from flask_mail import Mail, Message
 from config import config as p
-from routes import auth_routes, error_routes
+from routes import auth_routes, error_routes, user_routes
 from db import *
 from models import *
 
@@ -59,6 +59,7 @@ if __name__ == "__main__":
 
     # Blueprints
     app.register_blueprint(auth_routes.main, url_prefix="/auth")
+    app.register_blueprint(user_routes.main, url_prefix="/user")
     # app.register_blueprint(error_routes.main, url_prefix='/error')
 
     # Error handling
@@ -69,3 +70,4 @@ if __name__ == "__main__":
     csrf.init_app(app)
     login_manager_app.init_app(app)
     app.run()
+    # app.run(host="0.0.0.0")
