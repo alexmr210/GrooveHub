@@ -1,0 +1,14 @@
+{% extends './layout_menus.html' %}
+
+{% block title %}
+Mi colección
+{% endblock %}
+
+{% block customCSS1 %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+<h1>Visualización en desarrollo</h1>
+<p>En esta página se visualizará la colección del usuario.</p>
+{% endblock %}

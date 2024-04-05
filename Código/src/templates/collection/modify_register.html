@@ -1,0 +1,18 @@
+{% extends './layout_menus.html' %}
+
+{% block title %}
+Modificar
+{% endblock %}
+
+{% block customCSS1 %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+
+<h1>Modificar un disco</h1>
+<h2>¿Qué disco quieres modificar?</h2>
+<input type="text" placeholder="Nombre del disco">
+<button>Buscar</button>
+
+{% endblock %}
