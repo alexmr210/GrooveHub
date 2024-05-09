@@ -1,3 +1,4 @@
+import hashlib
 from flask import flash
 from config import config as p
 from sqlalchemy import create_engine
@@ -20,7 +21,7 @@ def db_login(inUsername, inPassword):
     try:
         dbUser = find_username(inUsername)
         if (dbUser):
-            dbUser.correctPassword = check_password_hash(dbUser.password, inPassword)
+            dbUser.correctPassword = check_password_hash(dbUser.contrasena, inPassword)
             return dbUser
         else:
             return None
@@ -36,7 +37,7 @@ def find_username(username):
     
 def find_email(email):
     try:
-        return session.query(User).where(User.email == email).first()
+        return session.query(User).where(User.correoElectronico == email).first()
     except Exception as ex:
         raise Exception(ex)
     
@@ -51,11 +52,13 @@ def db_signup(inUsername, inName, inPassword, inEmail):
             return False
         else:
             inPassword = generate_password_hash(inPassword)
+            inId = generate_password_hash(inUsername)
             user = User(
+                id_usuario=inId,
                 username=inUsername,
-                name=inName,
-                email=inEmail,
-                password=inPassword
+                nombre=inName,
+                correoElectronico=inEmail,
+                contrasena=inPassword
             )
             session.add(user)
             session.commit()
@@ -65,6 +68,6 @@ def db_signup(inUsername, inName, inPassword, inEmail):
     
 def change_password(user, password):
     hash = generate_password_hash(password)
-    session.query(User).filter(User.username == user.username).update({'password': hash})
+    session.query(User).filter(User.username == user.username).update({'contrasena': hash})
     session.commit
     return True

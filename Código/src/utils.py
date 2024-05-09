@@ -21,7 +21,7 @@ def send_reset_email(user):
     msg = Message()
     msg.subject = "Restablece tu contraseña"
     msg.sender = p.MAIL_USERNAME
-    msg.recipients = [user.email]
+    msg.recipients = [user.correoElectronico]
     msg.html = render_template('auth/reset_email.html',
                                 user=user, 
                                 token=token)

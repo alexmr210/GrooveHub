@@ -7,7 +7,8 @@ class Config:
     DB_USER = "postgres"
     DB_PASS = "postgres"
     DB_PORT = "5432"
-    DB_NAME = "prueba_usuarios"
+    DB_NAME = "discos_2"
+    # DB_NAME = "prueba_usuarios"
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465
     MAIL_USE_SSL = True

@@ -16,7 +16,7 @@ mail = Mail(app)
 
 @login_manager_app.user_loader
 def load_user(id):
-    return session.query(User).where(User.id == id).first()
+    return session.query(User).where(User.id_usuario == id).first()
 
 
 @app.route("/")
@@ -41,7 +41,7 @@ def protected():
 @app.route("/users")
 def users():
     users = session.query(User)
-    user_list = [{"username": user.username, "id": user.id} for user in users]
+    user_list = [{"username": user.username, "id": user.id_usuario} for user in users]
     return jsonify({"users": user_list})
 
 
