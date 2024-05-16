@@ -1,0 +1,31 @@
+{% extends './layout_menus.html' %}
+
+{% block title %}
+Nuevo disco
+{% endblock %}
+
+{% block customCSS1 %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+
+<h1>SELECCIONAR</h1>
+{% for opcion in opciones %}
+<form action="/selected" method="GET">
+    <div class="option">
+        <img src="{{ opcion.imageUrl }}" alt="Carátula de {{ opcion.title }}">
+        <h3>{{ opcion.title }}</h3>
+        <p>{{ opcion.artists }}</p>
+        <p>{{ opcion.format }}</p>
+        <p>{{ opcion.year }}</p>
+        <p>{{ opcion.country }}</p>
+        <input type="hidden" name="option" value="{{ loop.index }}">
+        <button type="submit">Elegir</button>
+    </div>
+</form>
+{% endfor %}
+
+
+
+{% endblock %}

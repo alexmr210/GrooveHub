@@ -5,14 +5,11 @@ from sqlalchemy import (
     Integer,
     PrimaryKeyConstraint,
     String,
-    Sequence,
-    Identity,
 )
 from sqlalchemy.orm import declarative_base, relationship
 from flask_login import UserMixin
 from config import config as p
 from jwt import encode, decode
-from sqlalchemy.schema import CreateTable
 
 ### En este fichero se almacenan los modelos de las tablas en la base de datos
 

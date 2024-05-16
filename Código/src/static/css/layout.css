@@ -144,3 +144,50 @@ footer {
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
 }
+
+.alert {
+    padding-right: 3rem;
+    position: relative;
+    padding: 1rem 1rem;
+
+    color: var(--naranja2);
+    background-color: var(--naranja3);
+    border: 2px solid var(--amarillo1);
+    border-radius: 0.375rem;
+    max-width: 77%;
+    margin: auto;
+    margin-bottom: 1rem;
+    z-index: 99;
+
+}
+
+.alert p {
+    text-align: center;
+    font-weight: bold;
+    margin: 0;
+    max-width: calc(100% - 2.5rem);
+    position: relative;
+}
+
+.btn-close {
+    box-sizing: content-box;
+    display: block;
+    width: 1em;
+    height: 1em;
+    padding: 0.25em 0.25em;
+    color: var(--amarillo1);
+    background: transparent url(../img/close.svg) center/1em auto no-repeat;
+    border: 0;
+    border-radius: 0.375rem;
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.25rem 1rem;
+    transition-duration: 0.3s;
+}
+
+.btn-close:hover {
+    transform: scale(1.2);
+}

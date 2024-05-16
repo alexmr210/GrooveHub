@@ -1,0 +1,32 @@
+{% extends './layout_menus.html' %}
+
+{% block title %}
+Nuevo disco
+{% endblock %}
+
+{% block customCSS1 %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
+{% endblock %}
+
+{% block customJS %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+{% endblock %}
+
+{% block bodyContent %}
+
+<h1>Agregar un nuevo disco</h1>
+<h2>¿Cómo prefiers continuar?</h2>
+<p>Escánear código de barras</p>
+<button id="scanButton">Escanear</button>
+<div id="scanResult"></div>
+<p>Buscar manualmente</p>
+<form action="/insert" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form">
+        <input type="text" name="search" id="search" placeholder="Nombre del disco" required>
+        <button type="submit" class="btn-submit">Buscar</button>
+    </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+-------------------------
+PREGUNTAS
+-------------------------
+- Mantenemos menú lateral?
+- Podemos hacer modificaciones o no? (Info de los discos es compartida)
+  · Posible solución: Al hacer una modificación, crear un registro totalmente nuevo del disco/artista/canción, pero podría significar sobrecargar la BD con valores personalizados que solo va a tener un usuario
+  
+-------------------------
+TAREAS PENDIENTES
+-------------------------
+- Añadir información de ayuda al añadir un disco (si esta buscando por codigo de barras -> discos antiguos no tienen, tienen que introducir un codigo que es como un numero de serie tipo 'LP123')
+- Crear usuarios administradores

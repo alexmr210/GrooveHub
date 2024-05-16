@@ -10,9 +10,8 @@ Eliminar
 
 {% block bodyContent %}
 
-<h1>Eliminar un disco</h1>
-<h2>¿Qué disco quieres eliminar?</h2>
-<input type="text" placeholder="Nombre del disco">
-<button>Buscar</button>
+<h1>Disco eliminado</h1>
+<p>Se ha eliminado {{ title }} de tu colección.</p>
+<img src="{{ image }}" alt="Carátula de {{ title }}">
 
 {% endblock %}

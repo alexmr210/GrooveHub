@@ -10,21 +10,31 @@
 <div class="side-menu">
     <h2 class="side-title">Mi colección</h2>
     <ul>
-        <li><a href="general-view">Ver mi colección</a></li>
-        <li><a href="new-register">Registrar un disco</a></li>
-        <li><a href="search-register">Buscar un disco</a></li>
+        <li><a href="{{ url_for('collection.view') }}">Ver mi colección</a></li>
+        <li><a href="{{ url_for('collection.insert') }}">Registrar un disco</a></li>
+        <li><a href="{{ url_for('collection.search') }}">Buscar un disco</a></li>
         <li>
             <div class="submenu">
                 <a href="">Hacer cambios</a>
                 <ul class="dropdown">
-                    <li><a href="modify-register">Modificar un disco</a></li>
-                    <li><a href="delete-register">Eliminar un disco</a></li>
+                    <li><a href="{{ url_for('collection.modify') }}">Modificar un disco</a></li>
+                    <!-- <li><a href="{{ url_for('collection.view') }}">Eliminar un disco</a></li> -->
                 </ul>
             </div>
         </li>
     </ul>
 </div>
 <div class="main">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert" role="alert">
+        <p>{{ message }}</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
     {% block bodyContent %}{% endblock %}
 </div>
 {% endblock %}

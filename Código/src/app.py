@@ -29,30 +29,6 @@ def home():
     return render_template("home.html")
 
 
-# BORRAR v
-# Ejemplo de ruta protegida (Requiere iniciar sesión)
-@app.route("/protected")
-@login_required
-def protected():
-    return "Esta es una vista protegida, solo para usuarios autenticados."
-
-
-# Función de prueba para la conexión a BD
-@app.route("/users")
-def users():
-    users = session.query(User)
-    user_list = [{"username": user.username, "id": user.id_usuario} for user in users]
-    return jsonify({"users": user_list})
-
-
-@app.route("/hash/<password>")
-def hash_password(password):
-    hashed_value = generate_password_hash(password)
-    return hashed_value
-
-
-# BORRAR ^
-
 if __name__ == "__main__":
     # Configuration
     app.config.from_object(p)
@@ -61,7 +37,6 @@ if __name__ == "__main__":
     app.register_blueprint(auth_routes.main, url_prefix="/auth")
     app.register_blueprint(user_routes.main, url_prefix="/user")
     app.register_blueprint(collection_routes.main, url_prefix="/")
-    # app.register_blueprint(error_routes.main, url_prefix='/error')
 
     # Error handling
     app.register_error_handler(401, error_routes.status_401)
