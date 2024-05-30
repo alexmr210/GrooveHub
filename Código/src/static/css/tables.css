@@ -1,0 +1,168 @@
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    position: relative;
+}
+
+td img {
+    height: 60px;
+}
+
+
+.sort-menu {
+    position: absolute;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    display: none;
+    background-color: var(--claro1);
+    border-radius: 0.3rem;
+}
+
+.sort-menu p {
+    width: auto;
+    color: var(--oscuro1);
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.sort-menu .sort-btn {
+    display: inline-block;
+    margin-left: 2px;
+}
+
+.sort-menu div {
+    margin: 4px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+
+.sort-menu .filter-input {
+    width: 6rem;
+    height: 1.4rem;
+    margin-right: 2px;
+    border-radius: 0.3rem;
+    border: 0.5px solid var(--medio1);
+}
+
+.sort-menu .filter-btn {
+    width: 1.5rem;
+    height: 1.5rem;
+    background: transparent url(../img/magnifying-glass.svg) center/1.1em auto no-repeat;
+}
+
+.sort-menu button {
+    background: transparent;
+    border-radius: 0.3rem;
+    box-shadow: 3px 3px 3px -2px var(--medio1);
+    border: 0.5px solid var(--medio1);
+}
+
+.sort-menu button:hover {
+    box-shadow: inset 3px 3px 3px -2px var(--medio1);
+}
+
+th:hover .sort-menu {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 2fr;
+}
+
+table.coll-tbl {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+    background: var(--claro2);
+    border-radius: 1rem;
+}
+
+table.coll-tbl td,
+table.coll-tbl th {
+    border: 0px;
+    padding: 5px 8px;
+    text-align: center;
+}
+
+table.coll-tbl tbody td {
+    font-size: 0.9rem;
+}
+
+table.coll-tbl tr {
+    background: var(--claro1);
+}
+
+table.coll-tbl tr:nth-child(even) {
+    background: var(--claro3);
+}
+
+table.coll-tbl thead {
+    border-bottom: 3px solid var(--claro1);
+}
+
+table.coll-tbl thead th {
+    background: var(--oscuro3);
+}
+
+table.coll-tbl thead th:first-child {
+    border-top-left-radius: 1rem;
+}
+
+table.coll-tbl thead th:last-child {
+    border-top-right-radius: 1rem;
+}
+
+table.coll-tbl thead th {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--claro1);
+    text-align: center;
+    border-left: 3px solid var(--claro1);
+}
+
+table.coll-tbl thead th:first-child {
+    border-left: none;
+}
+
+.tbl-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.7;
+}
+
+.tbl-btn {
+    display: inline-block;
+    width: 1.6em;
+    height: 1.6em;
+    opacity: 0.5;
+    transition-duration: 0.3s;
+    margin-right: 3px;
+}
+
+.view {
+    background: transparent url(../img/eye-open.svg) center/1.8em auto no-repeat;
+}
+
+.modify {
+    background: transparent url(../img/pencil.svg) center/1.8em auto no-repeat;
+}
+
+.delete {
+    background: transparent url(../img/trash.svg) center/1.8em auto no-repeat;
+}
+
+table.tracklist th {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+table.tracklist {
+    width: 70%;
+}

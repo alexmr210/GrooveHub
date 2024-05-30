@@ -23,9 +23,11 @@ class User(Base, UserMixin):
     username = Column(String(20), nullable=False)
     contrasena = Column(String(255), nullable=False)
     nombre = Column(String(255), nullable=False)
-    correoElectronico = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False)
     ediciones = relationship("Edicion_Usuario", back_populates="usuario")
+    role = Column(String(20), nullable=True)
     correctPassword = False
+    admin = False
 
     def get_id(self):
         return str(self.id_usuario)

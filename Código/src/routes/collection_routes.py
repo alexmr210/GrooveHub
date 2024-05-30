@@ -2,9 +2,7 @@ from flask import Blueprint, flash, render_template, redirect, request, session,
 from flask_login import login_required, current_user
 from extraccionDatos import *
 from data import *
-from db import db_insert_disk, get_collection, get_tracklist, db_delete_disk
-
-# from PROGRAMAMODULADO import extraccionDatosDiscogs as edd
+from db import db_insert_disk, get_collection, db_delete_disk, get_disk
 
 main = Blueprint("collection", __name__)
 
@@ -23,11 +21,11 @@ def view():
     )
 
 
-@main.route("/tracklist/<idDisco>")
+@main.route("/details/<idDisco>")
 @login_required
-def tracklist(idDisco):
-    collectionData = get_tracklist(idDisco)
-    return render_template("collection/tracklist.html", collectionData=collectionData)
+def details(idDisco):
+    collectionData = get_disk(idDisco)
+    return render_template("collection/details.html", collectionData=collectionData)
 
 
 @main.route("/insert", methods=["GET", "POST"])
@@ -36,13 +34,32 @@ def insert():
     if request.method == "POST":
         if "search" in request.form:
             search = request.form["search"]
+        elif (
+            "title" in request.form
+            or "artist" in request.form
+            or "year" in request.form
+            or "format" in request.form
+            or "country" in request.form
+            or "barcode" in request.form
+        ):
+            title = request.form["title"]
+            artist = request.form["artist"]
+            year = request.form["year"]
+            format = request.form["format"]
+            country = request.form["country"]
+            barcode = request.form["barcode"]
+            search = [title, artist, year, format, country, barcode]
+            print(search)
         elif "search" in request.json:
             search = request.json["search"]
         else:
             flash("No se ha proporcionado un término de búsqueda válido.")
             return redirect(url_for("main.insert"))
         if search != None:
-            opciones = searchDiscogs(search)
+            if type(search) == str:
+                opciones = searchDiscogs(search)
+            elif type(search) == list:
+                opciones = searchDiscogsAdvanced(search)
             if opciones:
                 session["opciones"] = opciones
                 return redirect(url_for("collection.select"))
@@ -115,16 +132,13 @@ def selected():
     return redirect(url_for("collection.insert"))
 
 
-@main.route("/search-register")
+@main.route("/modify/<idDisco>")
 @login_required
-def search():
-    return render_template("collection/search_register.html")
-
-
-@main.route("/modify-register")
-@login_required
-def modify():
-    return render_template("collection/modify_register.html")
+def modify(idDisco):
+    collectionData = get_disk(idDisco)
+    return render_template(
+        "collection/modify_register.html", collectionData=collectionData
+    )
 
 
 @main.route("/delete/<idDisco>")

@@ -7,6 +7,9 @@ def status_401(error):
     flash("Debes iniciar sesión primero para acceder a esta vista")
     return redirect(url_for("auth.login"))
 
+def status_403(error):
+    return render_template("/error/403.html")
 
 def status_404(error):
     return render_template("/error/404.html")
+

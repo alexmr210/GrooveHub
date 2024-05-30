@@ -1,0 +1,17 @@
+{% extends './layout.html' %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block bodyContent %}
+
+<h1>VISTA DE ADMINISTRADOR</h1>
+<h3>¿Qué quieres hacer?</h3>
+<a href="{{ url_for('admin.view_users') }}" class="link-btn">Administrar usuarios</a>
+
+{% endblock %}

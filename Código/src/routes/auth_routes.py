@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 from db import db_login, db_signup, find_email, find_username, change_password
 from flask_login import login_user, logout_user
 from utils import send_reset_email
@@ -81,4 +81,5 @@ def reset_verified(token):
 @main.route("/logout")
 def logout():
     logout_user()
+    session.pop('admin', None)
     return redirect(url_for("auth.login"))

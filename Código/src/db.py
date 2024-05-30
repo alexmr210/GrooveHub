@@ -33,6 +33,7 @@ def db_login(inUsername, inPassword):
         dbUser = find_username(inUsername)
         if dbUser:
             dbUser.correctPassword = check_password_hash(dbUser.contrasena, inPassword)
+            dbUser.admin = dbUser.role == "ADMIN"
             return dbUser
         else:
             return None
@@ -50,7 +51,14 @@ def find_username(username):
 
 def find_email(email):
     try:
-        return session.query(User).where(User.correoElectronico == email).first()
+        return session.query(User).where(User.email == email).first()
+    except Exception as ex:
+        raise Exception(ex)
+
+
+def find_userid(id):
+    try:
+        return session.query(User).where(User.id_usuario == id).first()
     except Exception as ex:
         raise Exception(ex)
 
@@ -71,8 +79,9 @@ def db_signup(inUsername, inName, inPassword, inEmail):
                 id_usuario=inId,
                 username=inUsername,
                 nombre=inName,
-                correoElectronico=inEmail,
+                email=inEmail,
                 contrasena=inPassword,
+                role="USER",
             )
             session.add(user)
             session.commit()
@@ -199,20 +208,39 @@ def get_tracklist(idDisco):
     rows = result.fetchall()
     tracklist = []
     for row in rows:
-        duration = "Desconocido"
-        if row.duracion != "":
-            duration == row.duracion
         song = {
             "idCancion": row.id_cancion,
             "songTitle": row.cancion,
-            "songDuration": duration,
+            "songDuration": row.duracion,
             "idDisco": row.id_disco,
         }
         tracklist.append(song)
     query = f"SELECT titulo FROM DISCOS WHERE ID_DISCO='{idDisco}'"
     result = connection.execute(text(query))
     titulo = result.fetchone()[0]
-    info = {"disco": titulo, "tracklist": tracklist}
+    return tracklist
+
+
+def get_disk(idDisco):
+    query = f"SELECT * FROM ediciones_disco WHERE id_disco='{idDisco}'"
+    edition = connection.execute(text(query)).fetchone()
+    query = f"SELECT * FROM discos WHERE id_disco='{idDisco}'"
+    disk = connection.execute(text(query)).fetchone()
+    idArtista = disk.id_artista
+    query = f"SELECT * FROM artistas WHERE id_artista='{idArtista}'"
+    artist = connection.execute(text(query)).fetchone()
+    info = {
+        "title": disk.titulo,
+        "artists": artist.artista,
+        "tracklist": get_tracklist(idDisco),
+        "format": edition.edicion,
+        "year": edition.agno,
+        "country": edition.pais,
+        "idDisco": idDisco,
+        "idArtista": idArtista,
+        "idEdicion": edition.id_edicion,
+        "imageUrl": edition.caratula,
+    }
     return info
 
 
@@ -241,3 +269,75 @@ def db_delete_disk(idDisco, usuario):
 
 def modString(string):
     return string.replace("'", "''")
+
+
+def get_six(user):
+    query = f"""SELECT A.ID_ARTISTA, A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, EU.ID_USUARIO, ED.CARATULA FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA 
+        INNER JOIN EDICIONES_DISCO ED ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU ON ED.ID_EDICION=EU.ID_EDICION
+        WHERE EU.ID_USUARIO='{user}' ORDER BY RANDOM() LIMIT 6"""
+    result = connection.execute(text(query))
+    rows = result.fetchall()
+    collection = []
+    for row in rows:
+        item = {
+            "title": row.titulo,
+            "artists": row.artista,
+            "format": row.edicion,
+            "year": row.agno,
+            "country": row.pais,
+            "idDisco": row.id_disco,
+            "imageUrl": row.caratula,
+        }
+        collection.append(item)
+    return collection
+
+
+def get_users():
+    query = f"""SELECT * FROM usuarios"""
+    result = connection.execute(text(query))
+    rows = result.fetchall()
+    collection = []
+    for row in rows:
+        item = {
+            "idUsuario": row.id_usuario,
+            "username": row.username,
+            "name": row.nombre,
+            "email": row.email,
+            "role": row.role,
+        }
+        collection.append(item)
+    return collection
+
+
+def db_delete_user(idUsuario):
+    query = f"DELETE FROM ediciones_usuario WHERE id_usuario='{idUsuario}'"
+    result = connection.execute(text(query))
+    query = f"SELECT * FROM usuarios WHERE id_usuario='{idUsuario}'"
+    username = connection.execute(text(query)).fetchone().username
+    query = f"DELETE FROM usuarios WHERE id_usuario='{idUsuario}'"
+    result = connection.execute(text(query))
+    connection.commit
+    return username
+
+
+def db_modify_user(user):
+    try:
+        query = text(
+            """UPDATE usuarios
+            SET username=:username, nombre=:nombre, email=:email, role=:role
+            WHERE id_usuario=:id_usuario"""
+        )
+        session.execute(
+            query,
+            {
+                "username": user["username"],
+                "nombre": user["name"],
+                "email": user["email"],
+                "role": user["role"],
+                "id_usuario": user["id"],
+            },
+        )
+        session.commit()  # Confirmar la transacción
+    except Exception as e:
+        session.rollback()  # Revertir en caso de error
+        flash(f"Error al modificar el usuario: {str(e)}")

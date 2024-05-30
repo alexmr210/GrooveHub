@@ -282,7 +282,7 @@
         <mxCell id="FV_DMBQxLh2Q8wuSqKjp-23" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="595" y="769" width="10" height="10" as="geometry" />
         </mxCell>
-        <mxCell id="FV_DMBQxLh2Q8wuSqKjp-24" value="correoElectronico" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="FV_DMBQxLh2Q8wuSqKjp-24" value="email" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="570" y="779" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="FV_DMBQxLh2Q8wuSqKjp-26" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="N1IhiID0ncgJhYR1q3py-21">

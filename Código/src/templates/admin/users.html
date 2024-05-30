@@ -5,24 +5,21 @@
 {% endblock %}
 
 {% block title %}
-Mi colección
+Administrador
 {% endblock %}
 
 {% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
 {% endblock %}
 
 {% block bodyContent %}
 <div class="title">
-    <h1>Mi colección</h1>
-    <a href="{{ url_for('collection.insert') }}" class="link-btn">Nuevo disco</a>
+    <h1>Usuarios en la base de datos</h1>
 </div>
 <table class="coll-tbl">
     <thead>
         <tr>
-            <th>Carátula</th>
-            <th>Título
+            <th>Username
                 <div class="sort-menu">
                     <div class="sort">
                         <p>Ordenar</p>
@@ -35,7 +32,7 @@ Mi colección
                     </div>
                 </div>
             </th>
-            <th>Artista
+            <th>Nombre
                 <div class="sort-menu">
                     <div class="sort">
                         <p>Ordenar</p>
@@ -48,7 +45,7 @@ Mi colección
                     </div>
                 </div>
             </th>
-            <th>Formato
+            <th>Correo electrónico
                 <div class="sort-menu">
                     <div class="sort">
                         <p>Ordenar</p>
@@ -61,20 +58,7 @@ Mi colección
                     </div>
                 </div>
             </th>
-            <th>Año
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>País
+            <th>Rol
                 <div class="sort-menu">
                     <div class="sort">
                         <p>Ordenar</p>
@@ -91,26 +75,18 @@ Mi colección
         </tr>
     </thead>
     <tbody>
-        {% for item in collectionData %}
+        {% for item in userData %}
         <tr>
+            <td>{{ item['username'] }}</td>
+            <td>{{ item['name'] }}</td>
+            <td>{{ item['email'] }}</td>
+            <td>{{ item['role'] }}</td>
             <td>
-                <a href="{{ url_for('collection.details', idDisco=item['idDisco']) }}" title="{{ item['title'] }}">
-                    <img src="{{ item['imageUrl'] }}" alt="Carátula de {{ item['title'] }}">
-                </a>
-            </td>
-            <td>{{ item['title'] }}</td>
-            <td>{{ item['artists'] }}</td>
-            <td>{{ item['format'] }}</td>
-            <td>{{ item['year'] }}</td>
-            <td>{{ item['country'] }}</td>
-            <td>
-                <a href="{{ url_for('collection.details', idDisco=item['idDisco']) }}" class="tbl-btn view"
-                    title="Ver detalles"></a>
-                <a href="{{ url_for('collection.modify', idDisco=item['idDisco']) }}" class="tbl-btn modify"
+                <a href="{{ url_for('admin.modify_user', idUsuario=item['idUsuario']) }}" class="tbl-btn modify"
                     title="Solicitar un cambio para este disco"></a>
-                <a href="{{ url_for('collection.delete', idDisco=item['idDisco']) }}" class="tbl-btn delete"
+                <a href="{{ url_for('admin.delete_user', idUsuario=item['idUsuario']) }}" class="tbl-btn delete"
                     title="Eliminar"
-                    data-confirm="¿Estás seguro de que quieres eliminar {{item['title']}} de tu colección?"></a>
+                    data-confirm="¿Estás seguro de que quieres eliminar el usuario {{item['name']}}?"></a>
             </td>
         </tr>
         {% endfor %}

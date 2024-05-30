@@ -1,4 +1,4 @@
-{% extends './layout_menus.html' %}
+{% extends './layout.html' %}
 
 {% block customJS %}
 <script src="{{ url_for('static', filename='js/collection.js') }}"></script>
@@ -8,7 +8,7 @@
 Mi colección
 {% endblock %}
 
-{% block customCSS1 %}
+{% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
 {% endblock %}
 

@@ -1,12 +1,22 @@
 -------------------------
-PREGUNTAS
--------------------------
-- Mantenemos menú lateral?
-- Podemos hacer modificaciones o no? (Info de los discos es compartida)
-  · Posible solución: Al hacer una modificación, crear un registro totalmente nuevo del disco/artista/canción, pero podría significar sobrecargar la BD con valores personalizados que solo va a tener un usuario
-  
--------------------------
 TAREAS PENDIENTES
 -------------------------
-- Añadir información de ayuda al añadir un disco (si esta buscando por codigo de barras -> discos antiguos no tienen, tienen que introducir un codigo que es como un numero de serie tipo 'LP123')
 - Crear usuarios administradores
+- Administradores pueden modificar discos y usuarios
+
+- Añadir información de ayuda al añadir un disco (si esta buscando por codigo de barras -> discos antiguos no tienen, tienen que introducir un codigo que es como un numero de serie tipo 'LP123')
+- Campos de BD mas grandes
+- Escanear varios seguidos
+- Inicio - modificar IU
+- Seleccionar disco a añadir - Mostrar canciones
+- Perfil de usuario
+- Página de solicitud de modificaciones
+- Mensaje que indique que está buscando al buscar un disco para añadir
+- Limitar búsqueda a un tamaño máximo
+-------------------------
+MEMORIA
+-------------------------
+* Añade ejemplo en Drive
+Introducción, Estado del arte (qué es Discogs y cómo accedemos, Flask y comparativas de frameworks como django..., API REST), Diseño (Requisitos, diagramas UML casos de uso, arquitectura del sistema, diagrama entidad-relacion, relacional, entidad-componente, de secuencia), Desarrollo práctico (implementacion del frontend y modificaciones del backend), Resultados (casos de prueba realizados, capturas de pantalla), conclusiones, futuras lineas (posibles cambios a futuro)
+* principios-mediados de julio
+

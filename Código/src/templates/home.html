@@ -1,9 +1,27 @@
-{% extends './layout_menus.html' %}
+{% extends './layout.html' %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
 
 {% block title %}
 Home
 {% endblock %}
 
 {% block bodyContent %}
-<h1>Visualización en desarrollo</h1>
+
+<h1>Bienvenido de nuevo</h1>
+<div class="container">
+    {% for item in collectionData %}
+    <div class="disk-box">
+        <a class="image" href="{{ url_for('collection.details', idDisco=item['idDisco']) }}" title="{{ item['title'] }}">
+            <img src="{{ item['imageUrl'] }}" alt="Carátula de {{ item['title'] }}">
+        </a>
+        <p class="title">{{ item['title'] }}</p>
+        <p class="artist">{{ item['artists'] }}</p>
+        <p class="format">{{ item['format'] }}</p>
+    </div>
+    {% endfor %}
+</div>
+
 {% endblock %}

@@ -18,6 +18,11 @@ body {
     margin: 0;
 }
 
+.main {
+    padding: 1rem;
+}
+
+
 .navbar nav {
     background-color: var(--oscuro1);
     width: 100%;

@@ -9,41 +9,6 @@
     width: 7rem;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-    position: relative;
-}
-
-td img {
-    height: 60px;
-}
-
-.sort-menu {
-    position: absolute;
-    background-color: #f9f9f9;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    display: none;
-}
-
-.sort-menu button {
-    width: 100%;
-    padding: 8px 16px;
-    text-align: left;
-}
-
-th:hover .sort-menu {
-    display: block;
-}
-
 #videoContainer {
     z-index: 1000;
     position: fixed;
@@ -75,4 +40,97 @@ th:hover .sort-menu {
 
 #closeButton:hover {
     background-color: rgba(255, 255, 255, 0.3);
+}
+
+.link-btn {
+    display: inline-block;
+    padding: 0.8rem;
+    text-decoration: none;
+    color: var(--oscuro2);
+    font-weight: 500;
+    text-align: center;
+    background-color: var(--amarillo1);
+    margin: 0.4rem 0rem;
+    border-radius: 10em;
+    transition-duration: 0.3s;
+}
+
+.link-btn:hover {
+    background-color: var(--naranja2);
+    font-weight: bold;
+    transform: scale(1.02);
+}
+
+.main {
+    padding-top: 0;
+}
+
+.body-container {
+    padding-top: 5px;
+}
+
+.title .link-btn {
+    margin-left: auto;
+    align-self: flex-end;
+}
+
+.title {
+    width: 100%;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.title h1 {
+    display: inline-block;
+}
+
+.info {
+    margin-top: 3px;
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    grid-template-rows: 1fr 4rem 4rem 5rem;
+}
+
+.info img {
+    width: 13rem;
+    height: 13rem;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 5;
+    box-shadow: 3px 3px 11px 0px rgba(0,0,0,0.58);
+}
+
+.info h1 {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    font-size: 3rem;
+}
+
+.info .info-artist {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.details .sep {
+    height: 2rem;
+}
+
+.details-btns {
+    position: absolute;
+    z-index: 3;
+    right: 1rem;
+    top: 1rem;
+    width: 12rem;
+}
+
+.details-btns a {
+    width: 100%;
+    margin: 3px;
+}
+
+.box {
+    position: relative;
 }

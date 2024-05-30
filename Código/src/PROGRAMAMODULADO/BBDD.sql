@@ -2,7 +2,7 @@ CREATE TABLE usuarios(
     id_usuario VARCHAR(255) PRIMARY KEY,
     contrasena VARCHAR(255), 
     nombre VARCHAR(255), 
-    correoElectronico VARCHAR(255)
+    email VARCHAR(255)
 );
 
 CREATE TABLE artistas(

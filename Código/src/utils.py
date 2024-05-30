@@ -17,5 +17,5 @@ def send_reset_email(user):
     msg.sender = (
         p.MAIL_USERNAME
     )  # Tomamos la dirección de email de los datos del usuario en la base de datos
-    msg.recipients = [user.correoElectronico]
+    msg.recipients = [user.email]
     msg.html = render_template("auth/reset_email.html", user=user, token=token)

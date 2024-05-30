@@ -1,10 +1,10 @@
-{% extends './layout_menus.html' %}
+{% extends './layout.html' %}
 
 {% block title %}
 Nuevo disco
 {% endblock %}
 
-{% block customCSS1 %}
+{% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
 {% endblock %}
 
@@ -16,7 +16,7 @@ Nuevo disco
 {% block bodyContent %}
 
 <h1>Agregar un nuevo disco</h1>
-<h2>¿Cómo prefiers continuar?</h2>
+<h2>¿Cómo prefieres continuar?</h2>
 <p>Escánear código de barras</p>
 <button id="scanButton">Escanear</button>
 <div id="scanResult"></div>
@@ -25,6 +25,32 @@ Nuevo disco
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form">
         <input type="text" name="search" id="search" placeholder="Nombre del disco" required>
+        <button type="submit" class="btn-submit">Buscar</button>
+    </div>
+</form>
+<h3>Búsqueda avanzada</h3>
+<form action="/insert" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form">
+        <p>Nombre del disco</p>
+        <input type="text" name="title">
+        <p>Artista</p>
+        <input type="text" name="artist">
+        <p>Año</p>
+        <input type="number" name="year">
+        <p>País</p>
+        <input type="text" name="country">
+        <p>Código de barras</p>
+        <input type="number" name="barcode">
+        <p>Formato</p>
+        <input list="format-types" name="format">
+        <datalist id="format-types">
+            <option value="Vinilo"></option>
+            <option value="CD"></option>
+            <option value="Cassette"></option>
+            <option value="DVD"></option>
+            <option value="Paquete"></option>
+        </datalist>
         <button type="submit" class="btn-submit">Buscar</button>
     </div>
 </form>
