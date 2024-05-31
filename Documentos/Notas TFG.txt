@@ -1,9 +1,10 @@
 -------------------------
 TAREAS PENDIENTES
 -------------------------
-- Crear usuarios administradores
-- Administradores pueden modificar discos y usuarios
-
+- Crear usuarios administradores:
+	- Modificar usuarios
+	- Eliminar discos
+	- Modificar discos
 - Añadir información de ayuda al añadir un disco (si esta buscando por codigo de barras -> discos antiguos no tienen, tienen que introducir un codigo que es como un numero de serie tipo 'LP123')
 - Campos de BD mas grandes
 - Escanear varios seguidos
@@ -13,6 +14,15 @@ TAREAS PENDIENTES
 - Página de solicitud de modificaciones
 - Mensaje que indique que está buscando al buscar un disco para añadir
 - Limitar búsqueda a un tamaño máximo
+- Repasar funciones de consulta a BD
+	- Pasar todo a ORM
+	- Objeto session dentro de cada función, no global, añadir:
+		session = Session()
+		...
+		finally:
+			session.close()
+	- Basarse en db_modify_user para los commit
+	
 -------------------------
 MEMORIA
 -------------------------

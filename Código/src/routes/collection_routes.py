@@ -2,7 +2,7 @@ from flask import Blueprint, flash, render_template, redirect, request, session,
 from flask_login import login_required, current_user
 from extraccionDatos import *
 from data import *
-from db import db_insert_disk, get_collection, db_delete_disk, get_disk
+from db import db_insert_disk, get_collection, db_delete_user_disk, get_disk
 
 main = Blueprint("collection", __name__)
 
@@ -144,6 +144,6 @@ def modify(idDisco):
 @main.route("/delete/<idDisco>")
 @login_required
 def delete(idDisco):
-    title, image = db_delete_disk(idDisco, current_user.id_usuario)
+    title, image = db_delete_user_disk(idDisco, current_user.id_usuario)
     # collectionData = get_tracklist(idDisco)
     return render_template("collection/delete_register.html", title=title, image=image)

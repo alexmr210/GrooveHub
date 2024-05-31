@@ -244,7 +244,7 @@ def get_disk(idDisco):
     return info
 
 
-def db_delete_disk(idDisco, usuario):
+def db_delete_user_disk(idDisco, usuario):
     # Buscamos el id_edicion
     query = f"""SELECT EU.id_edicion FROM ediciones_usuario EU INNER JOIN ediciones_disco ED ON EU.id_edicion=ED.id_edicion
         WHERE ED.id_disco='{idDisco}' AND EU.id_usuario='{usuario}'"""
@@ -310,14 +310,32 @@ def get_users():
 
 
 def db_delete_user(idUsuario):
-    query = f"DELETE FROM ediciones_usuario WHERE id_usuario='{idUsuario}'"
-    result = connection.execute(text(query))
-    query = f"SELECT * FROM usuarios WHERE id_usuario='{idUsuario}'"
-    username = connection.execute(text(query)).fetchone().username
-    query = f"DELETE FROM usuarios WHERE id_usuario='{idUsuario}'"
-    result = connection.execute(text(query))
-    connection.commit
-    return username
+    try:
+        query = f"DELETE FROM ediciones_usuario WHERE id_usuario='{idUsuario}'"
+        result = session.execute(text(query))
+        query = f"SELECT * FROM usuarios WHERE id_usuario='{idUsuario}'"
+        username = session.execute(text(query)).fetchone().username
+        query = f"DELETE FROM usuarios WHERE id_usuario='{idUsuario}'"
+        result = session.execute(text(query))
+        session.commit()
+        return username
+    except Exception as e:
+        session.rollback()
+        flash(f"Error al modificar el usuario: {str(e)}")
+
+def db_delete_disk(idDisco):
+    try:
+        query = f"DELETE FROM ediciones_usuario WHERE id_usuario='{idDisco}'"
+        result = session.execute(text(query))
+        query = f"SELECT * FROM usuarios WHERE id_usuario='{idDisco}'"
+        username = session.execute(text(query)).fetchone().username
+        query = f"DELETE FROM usuarios WHERE id_usuario='{idDisco}'"
+        result = session.execute(text(query))
+        session.commit()
+        return username
+    except Exception as e:
+        session.rollback()
+        flash(f"Error al modificar el usuario: {str(e)}")
 
 
 def db_modify_user(user):
@@ -337,7 +355,7 @@ def db_modify_user(user):
                 "id_usuario": user["id"],
             },
         )
-        session.commit()  # Confirmar la transacción
+        session.commit()
     except Exception as e:
-        session.rollback()  # Revertir en caso de error
+        session.rollback()
         flash(f"Error al modificar el usuario: {str(e)}")
