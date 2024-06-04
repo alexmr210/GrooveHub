@@ -1,45 +1,31 @@
 import json
 import discogs_client
+import discogs_client.exceptions
+from flask import abort
 
 
 def searchDiscogs(keyword):
     try:
-        inicio = 0
-        fin = inicio + 6
         d = discogs_client.Client(
             "TFG_discos", user_token="dmAPijsocOyiHNAfggGWoixCsBibEOfwlaiPQrEa"
         )
         resultados = list(d.search(keyword, type="release"))
-        fin = min(fin, len(resultados))
         if resultados:
-            collection = []
-            for resultado in resultados[inicio:fin]:
-                try:
-                    tracklist = []
-                    for song in resultado.tracklist:
-                        song = {"songTitle": song.title, "songDuration": song.duration}
-                        tracklist.append(song)
-                    item = {
-                        "title": resultado.title,
-                        "artists": resultado.artists[0].name,
-                        "tracklist": tracklist,
-                        "format": resultado.formats[0]["name"],
-                        "year": resultado.year,
-                        "country": resultado.country,
-                        "idDisco": resultado.master.id,
-                        "idArtista": resultado.artists[0].id,
-                        "imageUrl": resultado.images[0]["resource_url"],
-                    }
-                    collection.append(item)
-                except (AttributeError, IndexError, KeyError):
-                    # Saltar el item si hay una excepción porque falten datos o alguno esté corrupto
-                    continue
-            resultados = json.dumps(collection)
+            resultados = getCollection(resultados)
         return resultados
     except IndexError:
         print("Error: se ha introducido un código de barras que no existe")
-    except TypeError:
-        print(Exception)
+    except discogs_client.exceptions.HTTPError:
+        abort(429)
+
+
+
+def searchDiscogsList(search):
+    search = removeDuplicates(search)
+    resultados = []
+    for keyword in search:
+        resultados.append(searchDiscogs(keyword))
+    return resultados
 
 
 def searchDiscogsAdvanced(search):
@@ -50,41 +36,63 @@ def searchDiscogsAdvanced(search):
         format = str(search[3])
         country = str(search[4])
         barcode = str(search[5])
-        inicio = 0
-        fin = inicio + 6
         d = discogs_client.Client(
             "TFG_discos", user_token="dmAPijsocOyiHNAfggGWoixCsBibEOfwlaiPQrEa"
         )
         resultados = list(
             d.search(
-                type="release", title=title, artist=artist, year=year, format=format, country=country, barcode=barcode
+                type="release",
+                title=title,
+                artist=artist,
+                year=year,
+                format=format,
+                country=country,
+                barcode=barcode,
             )
         )
-        fin = min(fin, len(resultados))
         if resultados:
-            collection = []
-            for resultado in resultados[inicio:fin]:
-                try:
-                    tracklist = []
-                    for song in resultado.tracklist:
-                        song = {"songTitle": str(song.title), "songDuration": str(song.duration)}
-                        tracklist.append(song)
-                    item = {
-                        "title": str(resultado.title),
-                        "artists": str(resultado.artists[0].name),
-                        "tracklist": tracklist,
-                        "format": str(resultado.formats[0]["name"]),
-                        "year": str(resultado.year),
-                        "country": str(resultado.country),
-                        "idDisco": str(resultado.master.id),
-                        "idArtista": str(resultado.artists[0].id),
-                        "imageUrl": str(resultado.images[0]["resource_url"]),
-                    }
-                    collection.append(item)
-                except (AttributeError, IndexError, KeyError, TypeError):
-                    # Saltar el item si hay una excepción porque falten datos o alguno esté corrupto
-                    continue
-            resultados = json.dumps(collection)
+            resultados = getCollection(resultados)
         return resultados
     except IndexError:
         print("Error: se ha introducido un código de barras que no existe")
+
+
+def getCollection(resultados):
+    collection = []
+    inicio = 0
+    fin = min(inicio + 6, len(resultados))
+    for resultado in resultados[inicio:fin]:
+        try:
+            tracklist = []
+            for song in resultado.tracklist:
+                song = {
+                    "songTitle": str(song.title),
+                    "songDuration": str(song.duration),
+                }
+                tracklist.append(song)
+            item = {
+                "title": str(resultado.title),
+                "artists": str(resultado.artists[0].name),
+                "tracklist": tracklist,
+                "format": str(resultado.formats[0]["name"]),
+                "year": str(resultado.year),
+                "country": str(resultado.country),
+                "idDisco": str(resultado.master.id),
+                "idArtista": str(resultado.artists[0].id),
+                "imageUrl": str(resultado.images[0]["resource_url"]),
+            }
+            collection.append(item)
+        except (AttributeError, IndexError, KeyError, TypeError):
+            # Saltar el item si hay una excepción porque falten datos o alguno esté corrupto
+            continue
+    return json.dumps(collection)
+
+
+def removeDuplicates(input_list):
+    seen = set()
+    output_list = []
+    for item in input_list:
+        if item not in seen:
+            seen.add(item)
+            output_list.append(item)
+    return output_list

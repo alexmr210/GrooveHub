@@ -248,21 +248,21 @@ def db_delete_user_disk(idDisco, usuario):
     # Buscamos el id_edicion
     query = f"""SELECT EU.id_edicion FROM ediciones_usuario EU INNER JOIN ediciones_disco ED ON EU.id_edicion=ED.id_edicion
         WHERE ED.id_disco='{idDisco}' AND EU.id_usuario='{usuario}'"""
-    result = connection.execute(text(query))
+    result = session.execute(text(query))
     rows = result.fetchall()
     idEdicion = rows[0].id_edicion
 
     query = f"SELECT titulo FROM discos WHERE id_disco='{idDisco}'"
-    result = connection.execute(text(query))
+    result = session.execute(text(query))
     title = result.fetchall()[0].titulo
 
     query = f"SELECT caratula FROM ediciones_disco WHERE id_disco='{idDisco}'"
-    result = connection.execute(text(query))
+    result = session.execute(text(query))
     image = result.fetchall()[0].caratula
 
     query = f"DELETE FROM ediciones_usuario WHERE id_edicion='{idEdicion}' AND id_usuario='{usuario}'"
-    result = connection.execute(text(query))
-    connection.commit
+    result = session.execute(text(query))
+    session.commit()
 
     return title, image
 
@@ -323,13 +323,13 @@ def db_delete_user(idUsuario):
         session.rollback()
         flash(f"Error al modificar el usuario: {str(e)}")
 
-def db_delete_disk(idDisco):
+def db_delete_user(isUsuario):
     try:
-        query = f"DELETE FROM ediciones_usuario WHERE id_usuario='{idDisco}'"
+        query = f"DELETE FROM ediciones_usuario WHERE id_usuario='{isUsuario}'"
         result = session.execute(text(query))
-        query = f"SELECT * FROM usuarios WHERE id_usuario='{idDisco}'"
+        query = f"SELECT * FROM usuarios WHERE id_usuario='{isUsuario}'"
         username = session.execute(text(query)).fetchone().username
-        query = f"DELETE FROM usuarios WHERE id_usuario='{idDisco}'"
+        query = f"DELETE FROM usuarios WHERE id_usuario='{isUsuario}'"
         result = session.execute(text(query))
         session.commit()
         return username

@@ -10,17 +10,18 @@ Nuevo disco
 
 {% block bodyContent %}
 
-<h1>SELECCIONAR</h1>
-{% for opcion in opciones %}
+<h1>Resultados para {{ code }}</h1>
+<a href="{{ url_for('collection.selected') }}" class="link-btn">No insertar</a>
+{% for option in options %}
 <form action="/selected" method="GET">
     <div class="option">
-        <img src="{{ opcion.imageUrl }}" alt="Carátula de {{ opcion.title }}">
-        <h3>{{ opcion.title }}</h3>
-        <p>{{ opcion.artists }}</p>
-        <p>{{ opcion.format }}</p>
-        <p>{{ opcion.year }}</p>
-        <p>{{ opcion.country }}</p>
-        <input type="hidden" name="option" value="{{ loop.index }}">
+        <img src="{{ option.imageUrl }}" alt="Carátula de {{ option.title }}">
+        <h3>{{ option.title }}</h3>
+        <p>{{ option.artists }}</p>
+        <p>{{ option.format }}</p>
+        <p>{{ option.year }}</p>
+        <p>{{ option.country }}</p>
+        <input type="hidden" name="optionSelected" value="{{ loop.index }}">
         <button type="submit">Elegir</button>
     </div>
 </form>

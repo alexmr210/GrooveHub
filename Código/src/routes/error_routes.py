@@ -13,3 +13,7 @@ def status_403(error):
 def status_404(error):
     return render_template("/error/404.html")
 
+def status_429(error):
+    flash("Estamos teniendo problemas con tu petición. Por favor, inténtalo de nuevo en unos minutos.")
+    return redirect(url_for("home"))
+

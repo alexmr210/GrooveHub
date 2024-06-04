@@ -2,7 +2,8 @@ from flask import Blueprint, flash, render_template, redirect, request, session,
 from flask_login import login_required, current_user
 from extraccionDatos import *
 from data import *
-from db import db_insert_disk, get_collection, db_delete_user_disk, get_disk
+from db import get_collection, get_disk, db_delete_user_disk, db_insert_disk
+from utils import not_empty, send_modification_email
 
 main = Blueprint("collection", __name__)
 
@@ -32,6 +33,8 @@ def details(idDisco):
 @login_required
 def insert():
     if request.method == "POST":
+        scanned = False
+        advanced = False
         if "search" in request.form:
             search = request.form["search"]
         elif (
@@ -42,6 +45,7 @@ def insert():
             or "country" in request.form
             or "barcode" in request.form
         ):
+            advanced = True
             title = request.form["title"]
             artist = request.form["artist"]
             year = request.form["year"]
@@ -49,28 +53,43 @@ def insert():
             country = request.form["country"]
             barcode = request.form["barcode"]
             search = [title, artist, year, format, country, barcode]
-            print(search)
         elif "search" in request.json:
+            scanned = True
             search = request.json["search"]
         else:
             flash("No se ha proporcionado un término de búsqueda válido.")
             return redirect(url_for("main.insert"))
-        if search != None:
+        if search != None and search != "":
+            session["firstSelect"] = False
             if type(search) == str:
-                opciones = searchDiscogs(search)
-            elif type(search) == list:
-                opciones = searchDiscogsAdvanced(search)
-            if opciones:
-                session["opciones"] = opciones
+                options = [searchDiscogs(search)]
+                auxSearch = []
+                auxSearch.append(search)
+            elif advanced:
+                if not_empty(search):
+                    options = [searchDiscogsAdvanced(search)]
+                    auxSearch = []
+                    auxSearch.append(search)
+                else:
+                    flash(
+                        "No se ha introducido ningún valor. Por favor, inténtalo de nuevo."
+                    )
+                    return render_template("collection/insert.html")
+            elif scanned:
+                options = searchDiscogsList(search)
+                auxSearch = search
+                session["firstSelect"] = True
+            if options:
+                session["optionsList"] = options
+                session["codesList"] = auxSearch
                 return redirect(url_for("collection.select"))
             else:
-                flash("No hay coincidencias. Por favor, intenta de nuevo.")
+                flash("No se han encontrado resultados para esta búsqueda.")
                 return render_template("collection/insert.html")
         else:
-            flash("Error al realizar la búsqueda. Por favor, inténtalo de nuevo.")
+            flash("No se ha introducido ningún valor. Por favor, inténtalo de nuevo.")
         return render_template("collection/insert.html")
     else:
-
         if "pendingMessage" in session:
             flash(session["pendingMessage"])
             del session["pendingMessage"]
@@ -80,65 +99,133 @@ def insert():
 @main.route("/select")
 @login_required
 def select():
-    opciones = json.loads(session.get("opciones"))
-    if opciones:
-        return render_template("collection/insert_select.html", opciones=opciones)
+    if "pendingMessage" in session:
+        flash(session["pendingMessage"])
+        del session["pendingMessage"]
+    if session.get("firstSelect"):
+        session["firstSelect"] = False
+        return render_template("collection/insert_select.html", options=[], code="0")
     else:
-        flash("Ha habido un error. Por favor, intenta buscar de nuevo.")
-        return render_template("collection/insert.html")
+        try:
+            session["firstSelect"] = False
+            optionsList = session.get("optionsList")  # Objeto list
+            options = optionsList.pop(0)
+            session["optionsList"] = optionsList
+            codesList = session.get("codesList")
+            code = codesList.pop(0)
+            session["codesList"] = codesList
+            if options:
+                session["lastSearch"] = len(optionsList) == 0
+                session["options"] = options
+                session["code"] = code
+                options = json.loads(options)
+                return render_template(
+                    "collection/insert_select.html", options=options, code=code
+                )
+            else:
+                flash("No se han encontrado resultados.")
+                return render_template(
+                    "collection/insert_select.html", options=options, code=code
+                )
+        except IndexError:
+            flash("¡Vaya! Algo no ha ido como debería.")
+            return redirect(url_for("collection.insert"))
 
 
 @main.route("/selected")
 @login_required
 def selected():
-    numero = int(request.args.get("option")) - 1
-    opciones = json.loads(session.get("opciones"))
-    opcion = opciones[numero]
-    tracklist = []
-    duracionCanciones = []
-    for song in opcion["tracklist"]:
-        tracklist.append(song["songTitle"])
-        duracionCanciones.append(song["songDuration"])
-    hashEdicionDisco = generarHashEdicionDisco(
-        opcion["year"], opcion["country"], opcion["format"], opcion["title"]
-    )
-    hashCanciones = generarHashCanciones(
-        opcion["idArtista"], opcion["idDisco"], tracklist
-    )
-    idUsuario = current_user.id_usuario
-    inserted = db_insert_disk(
-        opcion["artists"],
-        opcion["title"],
-        tracklist,
-        opcion["format"],
-        opcion["year"],
-        hashEdicionDisco,
-        hashCanciones,
-        opcion["country"],
-        opcion["idDisco"],
-        opcion["idArtista"],
-        opcion["imageUrl"],
-        duracionCanciones,
-        idUsuario,
-    )
-
-    if inserted:
-        pendingMessage = "Se ha añadido el disco seleccionado a tu colección."
-    else:
-        pendingMessage = (
-            "Ya tienes ese disco en tu colección. No se han realizado cambios."
+    if "optionSelected" in request.args:
+        numero = int(request.args.get("optionSelected")) - 1
+        options = json.loads(session.get("options"))
+        option = options[numero]
+        tracklist = []
+        duracionCanciones = []
+        for song in option["tracklist"]:
+            tracklist.append(song["songTitle"])
+            duracionCanciones.append(song["songDuration"])
+        hashEdicionDisco = generarHashEdicionDisco(
+            option["year"], option["country"], option["format"], option["title"]
         )
-    session["pendingMessage"] = pendingMessage
-    return redirect(url_for("collection.insert"))
+        hashCanciones = generarHashCanciones(
+            option["idArtista"], option["idDisco"], tracklist
+        )
+        idUsuario = current_user.id_usuario
+        inserted = db_insert_disk(
+            option["artists"],
+            option["title"],
+            tracklist,
+            option["format"],
+            option["year"],
+            hashEdicionDisco,
+            hashCanciones,
+            option["country"],
+            option["idDisco"],
+            option["idArtista"],
+            option["imageUrl"],
+            duracionCanciones,
+            idUsuario,
+        )
+
+        if inserted:
+            pendingMessage = "Se ha añadido el disco seleccionado a tu colección."
+        else:
+            pendingMessage = (
+                "Ya tienes ese disco en tu colección. No se han realizado cambios."
+            )
+        # session["pendingMessage"] = pendingMessage
+        flash(pendingMessage)
+    if session.get("lastSearch"):
+        return redirect(url_for("collection.view"))
+    else:
+        return redirect(url_for("collection.select"))
 
 
-@main.route("/modify/<idDisco>")
+@main.route("/modify/<idDisco>", methods=["GET", "POST"])
 @login_required
 def modify(idDisco):
-    collectionData = get_disk(idDisco)
-    return render_template(
-        "collection/modify_register.html", collectionData=collectionData
-    )
+    if request.method == "POST":
+        tracklist = []
+        index = 0
+        while True:
+            original_song_title = request.form.get(f"tracklist[{index}][originalSongTitle]")
+            song_title = request.form.get(f"tracklist[{index}][songTitle]")
+            original_song_duration = request.form.get(
+                f"tracklist[{index}][originalSongDuration]"
+            )
+            song_duration = request.form.get(f"tracklist[{index}][songDuration]")
+
+            # Si no se encuentra una canción en el índice actual, terminamos el bucle
+            if not song_title:
+                break
+
+            tracklist.append(
+                {
+                    "originalSongTitle": original_song_title,
+                    "songTitle": song_title,
+                    "originalSongDuration": original_song_duration,
+                    "songDuration": song_duration,
+                }
+            )
+            index += 1
+        disk = {
+            "title": request.form["title"],
+            "artists": request.form["artists"],
+            "tracklist": tracklist,
+            "format": request.form["format"],
+            "year": request.form["year"],
+            "country": request.form["country"],
+            "idDisco": request.form["idDisco"],
+            "idArtista": request.form["idArtista"],
+            "idEdicion": request.form["idEdicion"],
+            "observations": request.form["observations"],
+        }
+        send_modification_email(disk)
+        flash("Gracias por tu ayuda. Hemos notificado al administrador para que revise los cambios necesarios.")
+        return redirect(url_for("collection.view"))
+    else:
+        diskData = get_disk(idDisco)
+        return render_template("collection/modify_register.html", diskData=diskData)
 
 
 @main.route("/delete/<idDisco>")

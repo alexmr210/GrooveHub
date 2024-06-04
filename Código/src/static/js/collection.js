@@ -61,33 +61,112 @@ document.addEventListener("DOMContentLoaded", function () {
 //Lectura de códigos de barras
 document.addEventListener("DOMContentLoaded", function () {
     const scanButton = document.getElementById("scanButton");
-    const scanResult = document.getElementById("scanResult");
     const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+    let scannedCodes = [];
 
-    scanButton.addEventListener("click", function () {
+    function initializeScanner() {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(function (stream) {
-                const videoContainer = document.createElement("div");
-                videoContainer.id = "videoContainer";
-                document.body.appendChild(videoContainer);
+                const camContainer = document.createElement("div");
+                camContainer.id = "camContainer";
+                camContainer.classList.add("cam-container");
+                document.body.appendChild(camContainer);
+
                 const video = document.createElement("video");
                 video.setAttribute("autoplay", true);
                 video.id = "videoPreview";
+                video.classList.add("video-preview");
                 video.srcObject = stream;
-                videoContainer.appendChild(video);
-                const closeButton = document.createElement("button");
-                closeButton.innerHTML = "X";
-                closeButton.id = "closeButton";
-                closeButton.style.position = "absolute";
-                closeButton.style.top = "10px";
-                closeButton.style.right = "10px";
-                closeButton.style.zIndex = "1001";
-                closeButton.style.cursor = "pointer";
-                closeButton.addEventListener("click", function () {
-                    stream.getTracks().forEach(track => track.stop());
-                    videoContainer.remove();
+                camContainer.appendChild(video);
+
+                const scanInfo = document.createElement("div");
+                scanInfo.id = "scanInfo";
+                scanInfo.classList.add("scan-info");
+                camContainer.appendChild(scanInfo);
+
+                const infoText = document.createElement("p");
+                infoText.textContent = "Códigos leídos";
+                scanInfo.appendChild(infoText);
+
+                const codeList = document.createElement("textarea");
+                codeList.id = "codeList";
+                codeList.classList.add("code-list");
+                scanInfo.appendChild(codeList);
+
+                codeList.addEventListener('change', function () {
+                    scannedCodes = codeList.value.split('\n').filter(code => code.trim() !== '');
                 });
-                videoContainer.appendChild(closeButton);
+
+                const searchButton = document.createElement("button");
+                searchButton.id = "scan-search";
+                searchButton.innerHTML = "Buscar";
+                searchButton.classList.add("reg-btn");
+                searchButton.addEventListener("click", function () {
+                    showLoadingScreen();
+                    fetch('/insert', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ search: scannedCodes })
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = response.url;
+                            } else {
+                                console.error('Error al procesar la solicitud:', response.status);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error de red:', error);
+                        });
+                });
+                scanInfo.appendChild(searchButton);
+
+                const cancelButton = document.createElement("button");
+                cancelButton.innerHTML = "Cancelar";
+                cancelButton.classList.add("reg-btn");
+                cancelButton.addEventListener("click", function () {
+                    scannedCodes = [];
+                    codeList.value = "";
+                    stream.getTracks().forEach(track => track.stop());
+                    camContainer.remove();
+                    Quagga.stop();
+                    Quagga.offDetected(onDetected);
+                });
+                scanInfo.appendChild(cancelButton);
+
+                // Crear la imagen de pregunta
+                const questionImage = document.createElement("img");
+                questionImage.src = "/static/img/question.svg";
+                questionImage.classList.add("question-image");
+
+                // Crear el cuadro de texto emergente
+                const hoverText = document.createElement("div");
+                hoverText.classList.add("hover-text");
+                hoverText.textContent = "¿Hay algún error en la lectura? Puedes modificar manualmente los códigos escaneados o eliminar los que finalmente no quieras buscar. Cuando hayas acabado, pulsa \"Buscar\" para hacerte con tus discos.";
+
+                // Añadir la imagen y el cuadro de texto a scanInfo
+                scanInfo.appendChild(questionImage);
+                scanInfo.appendChild(hoverText);
+
+                // Mostrar el cuadro de texto al hacer hover sobre la imagen
+                questionImage.addEventListener("mouseover", function () {
+                    hoverText.style.display = "block";
+                });
+                questionImage.addEventListener("mouseout", function () {
+                    hoverText.style.display = "none";
+                });
+
+                function onDetected(result) {
+                    const code = result.codeResult.code;
+                    if (!scannedCodes.includes(code)) {
+                        scannedCodes.push(code);
+                        codeList.value = scannedCodes.join("\n");
+                    }
+                }
+
                 Quagga.init({
                     inputStream: {
                         name: "Live",
@@ -105,34 +184,63 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log("QuaggaJS initialized");
                     Quagga.start();
                 });
-                Quagga.onDetected(function (result) {
-                    const code = result.codeResult.code;
-                    console.log("Barcode detected: " + code);
-                    fetch('/insert', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrfToken
-                        },
-                        body: JSON.stringify({ search: code })
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                window.location.href = response.url;
-                            } else {
-                                console.error('Error al procesar la solicitud:', response.status);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error de red:', error);
-                        });
-                    Quagga.stop();
-                    stream.getTracks().forEach(track => track.stop());
-                    videoContainer.remove();
-                });
+
+                Quagga.onDetected(onDetected);
             })
             .catch(function (err) {
                 console.error("Error al acceder a la cámara:", err);
             });
+    }
+
+    scanButton.addEventListener("click", function () {
+        initializeScanner();
     });
+
+    function showLoadingScreen() {
+        const loadingScreen = document.createElement("div");
+        loadingScreen.className = "loading-screen";
+        const container = document.createElement("div");
+        container.className = "loading-container";
+        const img = document.createElement("img");
+        img.src = "/static/img/loading.svg";
+        img.className = "loading-image";
+        const text = document.createElement("p");
+        text.textContent = "Buscando";
+        text.className = "loading-text";
+        container.appendChild(img);
+        container.appendChild(text);
+        loadingScreen.appendChild(container);
+        document.body.appendChild(loadingScreen);
+    }
+
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = ["manual-search", "advanced-search", "scan-search"];
+    buttons.forEach(function (buttonId) {
+        const button = document.getElementById(buttonId);
+        if (button) {
+            button.addEventListener("click", function () {
+                showLoadingScreen();
+            });
+        }
+    });
+
+    function showLoadingScreen() {
+        const loadingScreen = document.createElement("div");
+        loadingScreen.className = "loading-screen";
+        const container = document.createElement("div");
+        container.className = "loading-container";
+        const img = document.createElement("img");
+        img.src = "/static/img/loading.svg";
+        img.className = "loading-image";
+        const text = document.createElement("p");
+        text.textContent = "Buscando";
+        text.className = "loading-text";
+        container.appendChild(img);
+        container.appendChild(text);
+        loadingScreen.appendChild(container);
+        document.body.appendChild(loadingScreen);
+    }
 });

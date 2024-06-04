@@ -1,27 +1,54 @@
 -------------------------
 TAREAS PENDIENTES
 -------------------------
-- Crear usuarios administradores:
-	- Modificar usuarios
-	- Eliminar discos
-	- Modificar discos
-- Añadir información de ayuda al añadir un disco (si esta buscando por codigo de barras -> discos antiguos no tienen, tienen que introducir un codigo que es como un numero de serie tipo 'LP123')
-- Campos de BD mas grandes
-- Escanear varios seguidos
-- Inicio - modificar IU
-- Seleccionar disco a añadir - Mostrar canciones
-- Perfil de usuario
-- Página de solicitud de modificaciones
-- Mensaje que indique que está buscando al buscar un disco para añadir
-- Limitar búsqueda a un tamaño máximo
-- Repasar funciones de consulta a BD
-	- Pasar todo a ORM
-	- Objeto session dentro de cada función, no global, añadir:
-		session = Session()
-		...
-		finally:
-			session.close()
-	- Basarse en db_modify_user para los commit
+INTERFAZ:
+	- Inicio - modificar IU
+	- Seleccionar disco a añadir - Mostrar canciones
+	- Refinar eliminar discos: Envia a una pagina muy basica
+	- Interfaz de Insertar discos incompleta
+	- Página de solicitud de modificaciones
+	- Mail solicitud de modificación
+	- Logo
+	- Unificar title
+FUNCIONALIDAD:
+	- Perfil de usuario:
+		- Modificar datos públicos
+			- Modificar nombre
+			- Modificar username
+			- Modifcar email
+		- Modificar contraseña
+		- Eliminar cuenta
+MEJORAS:
+	- Limitar búsqueda a un tamaño máximo
+	- Repasar funciones de consulta a BD
+		- Pasar todo a ORM
+		- Objeto session dentro de cada función, no global, añadir:
+			session = Session()
+			...
+			finally:
+				session.close()
+		- Basarse en db_modify_user para los commit
+	- Comprobar si se puede hackear los datos de sesión (cambiar a admin)
+	
+-------------------------
+FUNCIONES PENDIENTES DE ADMINISTRADORES
+-------------------------
+Tabla que vea los discos (Título y artista)
+    - Modificar Título
+    - Modificar artista: 2 opciones: ???
+        o Modificar el nombre del artista
+        o Cambiar el artista por uno distinto (Habría que hacer una búsqueda en Discogs)
+    - Ver ediciones: Tabla con las ediciones (Formato, Año, País, Carátula)
+        - Modificar Formato
+        - Modificar Año
+        - Modificar País
+        - Modificar Carátula
+        - Eliminar Edición -> Eliminar de ediciones_disco y ediciones_usuario ???
+    - Ver canciones: Tabla con las canciones (Nombre, Duración)
+        - Modificar Nombre
+        - Modificar Duración
+        - Eliminar Canción -> Eliminar de artistas_canciones
+        - Añadir Canción ???
 	
 -------------------------
 MEMORIA
@@ -30,3 +57,6 @@ MEMORIA
 Introducción, Estado del arte (qué es Discogs y cómo accedemos, Flask y comparativas de frameworks como django..., API REST), Diseño (Requisitos, diagramas UML casos de uso, arquitectura del sistema, diagrama entidad-relacion, relacional, entidad-componente, de secuencia), Desarrollo práctico (implementacion del frontend y modificaciones del backend), Resultados (casos de prueba realizados, capturas de pantalla), conclusiones, futuras lineas (posibles cambios a futuro)
 * principios-mediados de julio
 
+--
+groovehubtechnicalservice@gmail.com
+GrooveHubUAH2024

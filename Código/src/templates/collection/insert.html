@@ -6,6 +6,7 @@ Nuevo disco
 
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/video.css') }}">
 {% endblock %}
 
 {% block customJS %}
@@ -24,11 +25,18 @@ Nuevo disco
 <form action="/insert" method="POST">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form">
-        <input type="text" name="search" id="search" placeholder="Nombre del disco" required>
-        <button type="submit" class="btn-submit">Buscar</button>
+        <input type="text" name="search" id="search">
+        <button type="submit" class="btn-submit" id="manual-search">Buscar</button>
+        <img src="/static/img/question.svg" class="question-image">
+        <div class="hover-text">Recomendamos realizar la búsqueda por el código de barras del disco. Los discos antiguos
+            no tienen código de barras, pero sí un código que los identifica, ¡fíjate en la parte de atrás! Si no lo
+            encuentras, también puedes buscar por el título del disco.</div>
+        </img>
     </div>
 </form>
 <h3>Búsqueda avanzada</h3>
+<img src="/static/img/question.svg" class="question-image">
+<div class="hover-text">Rellena los campos que conozcas y deja vacíos los que no.</div>
 <form action="/insert" method="POST">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form">
@@ -51,7 +59,7 @@ Nuevo disco
             <option value="DVD"></option>
             <option value="Paquete"></option>
         </datalist>
-        <button type="submit" class="btn-submit">Buscar</button>
+        <button type="submit" class="btn-submit" id="advanced-search">Buscar</button>
     </div>
 </form>
 
