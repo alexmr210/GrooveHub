@@ -1,0 +1,21 @@
+.song-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.song-container input {
+    margin-right: 10px;
+}
+
+.song-container button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.song-container button:hover {
+    background-color: darkred;
+}

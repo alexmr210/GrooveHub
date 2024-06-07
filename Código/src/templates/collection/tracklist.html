@@ -1,4 +1,4 @@
-{% extends './layout.html' %}
+{% extends session.get("layout") %}
 
 {% block customJS %}
 <script src="{{ url_for('static', filename='js/collection.js') }}"></script>

@@ -1,4 +1,4 @@
-{% extends './layout.html' %}
+{% extends session.get("layout") %}
 
 {% block customJS %}
 <script src="{{ url_for('static', filename='js/collection.js') }}"></script>
@@ -66,7 +66,11 @@ Administrador
                         <button class="sort-btn sort-desc" title="Descendente">🡻</button>
                     </div>
                     <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
+                        <select list="role-types" name="role" class="filter-input">
+                            <option value="">-Borrar-</option>
+                            <option value="USER">USER</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
                         <button class="filter-btn"></button>
                     </div>
                 </div>

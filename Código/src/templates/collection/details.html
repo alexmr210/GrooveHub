@@ -1,4 +1,4 @@
-{% extends './layout.html' %}
+{% extends session.get("layout") %}
 
 {% block customJS %}
 <script src="{{ url_for('static', filename='js/collection.js') }}"></script>
@@ -54,7 +54,7 @@ Mi colección
         </tbody>
     </table>
     <div class="details-btns">
-        <a href="{{ url_for('collection.view') }}" class="link-btn details-btn">Volver</a>
+        <a href="javascript:history.back()" class="link-btn details-btn">Volver</a>
         <a href="{{ url_for('collection.modify', idDisco=collectionData['idDisco']) }}" class="link-btn details-btn">Solicitar un cambio</a>
     </div>
 </div>

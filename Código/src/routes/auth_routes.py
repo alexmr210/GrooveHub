@@ -21,6 +21,7 @@ def login():
         if loggedUser != None:
             if loggedUser.correctPassword:
                 login_user(loggedUser)
+                session["layout"] = "./layout.html"
                 return redirect(url_for("home"))
             else:
                 flash("Contraseña incorrecta")
@@ -81,5 +82,5 @@ def reset_verified(token):
 @main.route("/logout")
 def logout():
     logout_user()
-    session.pop('admin', None)
+    session.pop("admin", None)
     return redirect(url_for("auth.login"))

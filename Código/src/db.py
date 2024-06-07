@@ -1,6 +1,7 @@
 from flask import flash
 from config import config as p
 from sqlalchemy import create_engine, text
+from data import generarHashCanciones
 from models import *
 from sqlalchemy.orm import sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -118,7 +119,7 @@ def db_insert_disk(
     inserted = False
     # Comprobamos si existe el artista
     artista = modString(artista)
-    query = f"SELECT * FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA INNER JOIN EDICIONES_DISCO ED ON D.ID_DISCO=ED.ID_DISCO WHERE A.ID_ARTISTA='{idArtista}'"
+    query = f"SELECT * FROM ARTISTAS WHERE ID_ARTISTA='{idArtista}'"
     result = connection.execute(text(query))
     row = result.fetchone()
     if row is None:  # El artista no está en la base de datos
@@ -127,7 +128,9 @@ def db_insert_disk(
         inserted = True
 
     titulo = modString(titulo)
-    query = f"SELECT * FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA INNER JOIN EDICIONES_DISCO ED ON D.ID_DISCO=ED.ID_DISCO WHERE A.ID_ARTISTA='{idArtista}' AND D.ID_DISCO='{idDisco}'"
+    query = (
+        f"SELECT * FROM DISCOS WHERE ID_ARTISTA='{idArtista}' AND ID_DISCO='{idDisco}'"
+    )
     result = connection.execute(text(query))
     row = result.fetchone()
     if row is None:  # El disco no está en la base de datos
@@ -175,7 +178,6 @@ def db_insert_disk(
 
     connection.commit()
     return inserted
-
 
 def get_collection(usuario):
     query = f"""SELECT A.ID_ARTISTA, A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, EU.ID_USUARIO, ED.CARATULA FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA 
@@ -244,6 +246,34 @@ def get_disk(idDisco):
     return info
 
 
+def get_all_disks():
+    query = f"""SELECT A.ID_ARTISTA, A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, ED.CARATULA
+        FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA 
+        INNER JOIN EDICIONES_DISCO ED ON D.ID_DISCO=ED.ID_DISCO
+        ORDER BY D.TITULO ASC"""
+    result = connection.execute(text(query))
+    rows = result.fetchall()
+    collection = []
+    for row in rows:
+        query = f"SELECT COUNT(*) FROM ediciones_usuario WHERE id_edicion = '{row.id_edicion}'"
+        amount = session.execute(text(query)).fetchone()[0]
+        item = {
+            "title": row.titulo,
+            "artists": row.artista,
+            "tracklist": 0,  # Para acceder a la tracklist se utilizará la función get_tracklist(idDisco)
+            "format": row.edicion,
+            "year": row.agno,
+            "country": row.pais,
+            "idDisco": row.id_disco,
+            "idArtista": row.id_artista,
+            "idEdicion": row.id_edicion,
+            "imageUrl": row.caratula,
+            "amount": amount,
+        }
+        collection.append(item)
+    return collection
+
+
 def db_delete_user_disk(idDisco, usuario):
     # Buscamos el id_edicion
     query = f"""SELECT EU.id_edicion FROM ediciones_usuario EU INNER JOIN ediciones_disco ED ON EU.id_edicion=ED.id_edicion
@@ -252,19 +282,133 @@ def db_delete_user_disk(idDisco, usuario):
     rows = result.fetchall()
     idEdicion = rows[0].id_edicion
 
-    query = f"SELECT titulo FROM discos WHERE id_disco='{idDisco}'"
-    result = session.execute(text(query))
-    title = result.fetchall()[0].titulo
+    # query = f"SELECT titulo FROM discos WHERE id_disco='{idDisco}'"
+    # result = session.execute(text(query))
+    # title = result.fetchall()[0].titulo
 
-    query = f"SELECT caratula FROM ediciones_disco WHERE id_disco='{idDisco}'"
-    result = session.execute(text(query))
-    image = result.fetchall()[0].caratula
+    # query = f"SELECT caratula FROM ediciones_disco WHERE id_disco='{idDisco}'"
+    # result = session.execute(text(query))
+    # image = result.fetchall()[0].caratula
 
     query = f"DELETE FROM ediciones_usuario WHERE id_edicion='{idEdicion}' AND id_usuario='{usuario}'"
     result = session.execute(text(query))
     session.commit()
 
-    return title, image
+    # return title, image
+
+
+def db_delete_disk(idDisco):
+    db_delete_tracklist(idDisco)
+    db_delete_edition(idDisco)
+    query = f"SELECT * FROM discos WHERE id_disco = '{idDisco}'"
+    idArtista = session.execute(text(query)).fetchone().id_artista
+    query = f"DELETE FROM discos WHERE id_disco = '{idDisco}'"  # Eliminamos el disco
+    session.execute(text(query))
+    db_delete_artist(idArtista)
+    session.commit()
+
+def db_modify_disk(disk):
+    db_modify_tracklist(disk["tracklist"])
+    db_modify_edition(disk)
+    db_modify_artist(disk)
+    query = f"""UPDATE discos SET
+        titulo='{disk["title"]}'
+        WHERE id_disco='{disk["idDisco"]}'"""
+    session.execute(text(query))
+
+    # CANCIONES
+    newTracklist = []
+    duracionCanciones = []
+    for song in disk["newTracklist"]:
+        newTracklist.append(song["songTitle"])
+        duracionCanciones.append(song["songDuration"])
+    hashCanciones = generarHashCanciones(
+            disk["idArtista"], disk["idDisco"], newTracklist
+        )
+	# Insercion de canciones
+    contador = 0
+    for cancion in disk["newTracklist"]:
+        # Comprobar si ya existe la canción
+        cancion = modString(cancion["songTitle"])
+        query = f"SELECT * FROM CANCIONES WHERE ID_CANCION='{hashCanciones[contador]}'"
+        session.execute(text(query))
+        result = session.execute(text(query))
+        row = result.fetchone()
+        if row is None:  # La canción no está en la base de datos
+            query = f"INSERT INTO CANCIONES (id_cancion, cancion, duracion) VALUES ('{hashCanciones[contador]}','{cancion}','{duracionCanciones[contador]}')"
+            session.execute(text(query))
+            query = f"INSERT INTO ARTISTAS_CANCIONES (id_artista, id_cancion) VALUES ('{disk["idArtista"]}','{hashCanciones[contador]}')"
+            session.execute(text(query))
+            query = f"INSERT INTO DISCOS_CANCIONES (id_disco, id_cancion) VALUES ('{disk["idDisco"]}','{hashCanciones[contador]}')"
+            session.execute(text(query))
+            inserted = True
+        contador += 1
+    session.commit()
+
+def db_modify_tracklist(tracklist):
+    for song in tracklist:
+        if song["delete"] == "True":
+            query = f"DELETE FROM artistas_canciones WHERE id_cancion='{song["songId"]}'"
+            session.execute(text(query))
+            query = f"DELETE FROM discos_canciones WHERE id_cancion='{song["songId"]}'"
+            session.execute(text(query))
+            query = f"DELETE FROM canciones WHERE id_cancion='{song["songId"]}'"
+            session.execute(text(query))
+        else:
+            query = f"UPDATE canciones SET cancion='{song["songTitle"]}', duracion='{song["songDuration"]}' WHERE id_cancion='{song["songId"]}'"
+            session.execute(text(query))
+
+def db_modify_edition(disk):
+    query = f"""UPDATE ediciones_disco SET
+        edicion='{disk["format"]}', agno='{disk["year"]}', pais='{disk["country"]}'
+        WHERE id_edicion='{disk["idEdicion"]}'"""
+    session.execute(text(query))
+
+def db_modify_artist(disk):
+    query = f"""UPDATE artistas SET
+        artista='{disk["artists"]}'
+        WHERE id_artista='{disk["idArtista"]}'"""
+    session.execute(text(query))
+
+def db_delete_artist(idArtista):
+    query = f"SELECT COUNT(*) FROM discos WHERE id_artista = '{idArtista}'"  # Cuantos discos hay de este artista
+    amount = session.execute(text(query)).fetchone()[0]
+    if amount != 0:
+        return "Hay discos asociadaos a este artista."
+    query = f"SELECT COUNT(*) FROM artistas_canciones WHERE id_artista = '{idArtista}'"  # Cuantas canciones hay de este artista
+    amount = session.execute(text(query)).fetchone()[0]
+    if amount != 0:
+        return "Hay canciones asociadas a este artista."
+    query = (
+        f"DELETE FROM artistas WHERE id_artista = '{idArtista}'"  # Eliminamos el disco
+    )
+    session.execute(text(query))
+    session.commit()
+    return f"Se ha eliminado el artista con ID {idArtista}."
+
+
+def db_delete_tracklist(idDisco):
+    query = f"SELECT id_cancion FROM discos_canciones WHERE id_disco = '{idDisco}'"
+    result = session.execute(text(query)).fetchall()
+    for row in result:
+        songId = row[0]
+        query = f"DELETE FROM discos_canciones WHERE id_cancion = '{songId}'"  # Eliminamos las canciones de discos_canciones
+        result = session.execute(text(query))
+        query = f"DELETE FROM artistas_canciones WHERE id_cancion = '{songId}'"  # Eliminamos las canciones de artistas_canciones
+        result = session.execute(text(query))
+        query = f"DELETE FROM canciones WHERE id_cancion = '{songId}'"  # Eliminamos las canciones de canciones
+        result = session.execute(text(query))
+
+
+def db_delete_edition(idDisco):
+    query = f"SELECT id_edicion FROM ediciones_disco WHERE id_disco = '{idDisco}'"
+    result = session.execute(text(query)).fetchall()
+    for row in result:
+        editionId = row[0]
+        query = f"DELETE FROM ediciones_usuario WHERE id_edicion = '{editionId}'"  # Eliminamos las ediciones de ediciones_usuario
+        result = session.execute(text(query))
+        query = f"DELETE FROM ediciones_disco WHERE id_edicion = '{editionId}'"  # Eliminamos las ediciones de ediciones_disco
+        result = session.execute(text(query))
 
 
 def modString(string):
@@ -323,6 +467,7 @@ def db_delete_user(idUsuario):
         session.rollback()
         flash(f"Error al modificar el usuario: {str(e)}")
 
+
 def db_delete_user(isUsuario):
     try:
         query = f"DELETE FROM ediciones_usuario WHERE id_usuario='{isUsuario}'"
@@ -359,3 +504,10 @@ def db_modify_user(user):
     except Exception as e:
         session.rollback()
         flash(f"Error al modificar el usuario: {str(e)}")
+
+def db_get_disk(idDisco):
+    try:
+        return session.query(Disco).where(Disco.id_disco == idDisco).first()
+    except Exception as ex:
+        raise Exception(ex)
+

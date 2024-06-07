@@ -22,6 +22,32 @@ Mi colección
     <thead>
         <tr>
             <th>Carátula</th>
+            <th>ID Disco
+                <div class="sort-menu">
+                    <div class="sort">
+                        <p>Ordenar</p>
+                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
+                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
+                    </div>
+                    <div class="filter">
+                        <input type="text" class="filter-input" placeholder="Filtrar">
+                        <button class="filter-btn"></button>
+                    </div>
+                </div>
+            </th>
+            <th>ID Edición
+                <div class="sort-menu">
+                    <div class="sort">
+                        <p>Ordenar</p>
+                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
+                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
+                    </div>
+                    <div class="filter">
+                        <input type="text" class="filter-input" placeholder="Filtrar">
+                        <button class="filter-btn"></button>
+                    </div>
+                </div>
+            </th>
             <th>Título
                 <div class="sort-menu">
                     <div class="sort">
@@ -87,6 +113,19 @@ Mi colección
                     </div>
                 </div>
             </th>
+            <th>Cant.
+                <div class="sort-menu">
+                    <div class="sort">
+                        <p>Ordenar</p>
+                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
+                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
+                    </div>
+                    <div class="filter">
+                        <input type="text" class="filter-input" placeholder="Filtrar">
+                        <button class="filter-btn"></button>
+                    </div>
+                </div>
+            </th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -98,17 +137,20 @@ Mi colección
                     <img src="{{ item['imageUrl'] }}" alt="Carátula de {{ item['title'] }}">
                 </a>
             </td>
+            <td>{{ item['idDisco'] }}</td>
+            <td class="limited" title="{{ item['idEdicion'] }}">{{ item['idEdicion'] }}</td>
             <td>{{ item['title'] }}</td>
             <td>{{ item['artists'] }}</td>
             <td>{{ item['format'] }}</td>
             <td>{{ item['year'] }}</td>
             <td>{{ item['country'] }}</td>
+            <td>{{ item['amount'] }}</td>
             <td>
                 <a href="{{ url_for('collection.details', idDisco=item['idDisco']) }}" class="tbl-btn view"
                     title="Ver detalles"></a>
-                <a href="{{ url_for('collection.modify', idDisco=item['idDisco']) }}" class="tbl-btn modify"
+                <a href="{{ url_for('admin.modify_disk', idDisco=item['idDisco']) }}" class="tbl-btn modify"
                     title="Solicitar un cambio para este disco"></a>
-                <a href="{{ url_for('collection.delete', idDisco=item['idDisco']) }}" class="tbl-btn delete"
+                <a href="{{ url_for('admin.delete_disk', idDisco=item['idDisco']) }}" class="tbl-btn delete"
                     title="Eliminar"
                     data-confirm="¿Estás seguro de que quieres eliminar {{item['title']}} de tu colección?"></a>
             </td>

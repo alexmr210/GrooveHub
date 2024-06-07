@@ -1,4 +1,4 @@
-{% extends './layout.html' %}
+{% extends session.get("layout") %}
 
 {% block title %}
 Nuevo disco
@@ -36,11 +36,10 @@ Nuevo disco
         <p>Correo electrónico</p>
         <input type="email" name="email" value="{{ user.email }}">
         <p>Rol</p>
-        <input list="role-types" name="role" value="{{ user.role }}">
-        <datalist id="role-types">
-            <option value="USER"></option>
-            <option value="ADMIN"></option>
-        </datalist>
+        <select list="role-types" name="role" value="{{ user.role }}">
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+        </select>
         <button type="submit" class="btn-submit">Modificar</button>
     </div>
 </form>

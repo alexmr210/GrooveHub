@@ -231,6 +231,7 @@ def modify(idDisco):
 @main.route("/delete/<idDisco>")
 @login_required
 def delete(idDisco):
-    title, image = db_delete_user_disk(idDisco, current_user.id_usuario)
-    # collectionData = get_tracklist(idDisco)
-    return render_template("collection/delete_register.html", title=title, image=image)
+    db_delete_user_disk(idDisco, current_user.id_usuario)
+    # title, image = db_delete_user_disk(idDisco, current_user.id_usuario)
+    flash("Se ha eliminado el disco seleccionado.")
+    return redirect(url_for("collection.view"))

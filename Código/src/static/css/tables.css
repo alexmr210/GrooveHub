@@ -1,4 +1,3 @@
-
 table {
     width: 100%;
     border-collapse: collapse;
@@ -75,6 +74,14 @@ th:hover .sort-menu {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 2fr;
+}
+
+td.limited {
+    /* word-wrap: normal; */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
 }
 
 table.coll-tbl {

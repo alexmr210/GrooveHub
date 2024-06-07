@@ -1,4 +1,4 @@
-{% extends './layout.html' %}
+{% extends session.get("layout") %}
 
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">

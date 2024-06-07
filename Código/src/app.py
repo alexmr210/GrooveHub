@@ -1,8 +1,6 @@
-from flask import Flask, jsonify, redirect, render_template, url_for
+from flask import redirect, render_template, url_for, session
 from flask_login import LoginManager, login_required, current_user
 from flask_wtf import CSRFProtect
-
-# from flask_mail import Mail
 from config import config as p
 import config
 from routes import (
@@ -15,6 +13,7 @@ from routes import (
 from db import *
 from models import *
 
+# Accedemos a la configuración global e inicializamos la gestión de usuarios
 config.init()
 login_manager_app = LoginManager()
 csrf = CSRFProtect()
@@ -34,10 +33,20 @@ def index():
 @login_required
 def home():
     if current_user.admin:
-        return render_template("admin/home_admin.html")
+        return redirect(url_for("admin.home"))
     else:
         collectionData = get_six(current_user.id_usuario)
         return render_template("home.html", collectionData=collectionData)
+
+
+# PRUEBAS
+@config.app.route("/test/<idDisco>")
+def test(idDisco):
+    disco = db_get_disk(idDisco)
+    canciones = disco.canciones
+    cancion = canciones[0].cancion
+    titulo = cancion.cancion
+    return render_template("test.html", info=disco)
 
 
 if __name__ == "__main__":

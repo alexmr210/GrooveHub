@@ -26,7 +26,8 @@
                             <img src="{{ url_for('static', filename='img/logo-claro.png') }}" alt="">
                         </a>
                     </li>
-                    <li><a href="{{ url_for('home') }}">Inicio</a></li>
+                    <li><a href="{{ url_for('admin.view_users') }}">Usuarios</a></li>
+                    <li><a href="{{ url_for('admin.view_disks') }}">Discos</a></li>
                 </ul>
                 <div class="nav-user">
                     <ul>
@@ -34,8 +35,8 @@
                             <a href="#">{{ current_user.nombre }} ▼</a>
                             <ul class="dropdown">
                                 <li><a href="{{ url_for('user.profile') }}">Perfil</a></li>
-                                <li><a href="{{ url_for('collection.view') }}">Mi colección</a></li>
-                                <li><a href="{{ url_for('collection.insert') }}">Nuevo disco</a></li>
+                                <li><a href="{{ url_for('admin.view_users') }}">Usuarios</a></li>
+                                <li><a href="{{ url_for('admin.view_disks') }}">Discos</a></li>
                                 <li><a href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
                             </ul>
                         </li>
