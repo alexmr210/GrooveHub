@@ -9,19 +9,40 @@ Home
 {% endblock %}
 
 {% block bodyContent %}
-
-<h1>Bienvenido de nuevo</h1>
-<div class="container">
+<div class="sidemenu">
+    <h1>¡{{ current_user.nombre }}, estás de vuelta!</h1>
+    <p>Ya te echábamos de menos...</p>
+    <hr>
+    <h3>¡Nos encanta ver crecer <a class="text" href="{{ url_for('collection.disks') }}">tu colección</a>!</h3>
+    <hr>
+    <p>Ya tienes {{disks}} discos de {{artists}} artistas distintos, ¡wow!</p>
+    <hr>
+    <p>¿Tienes alguno nuevo?</p>
+    <a class="link-btn" href="{{ url_for('collection.insert') }}">¡Vamos a añadirlo!</a>
+</div>
+<div class="sixrand">
     {% for item in collectionData %}
     <div class="disk-box">
-        <a class="image" href="{{ url_for('collection.details', idDisco=item['idDisco']) }}" title="{{ item['title'] }}">
+        <a class="image" href="{{ url_for('collection.details', idEdicion=item['idEdicion']) }}"
+            title="{{ item['title'] }}">
             <img src="{{ item['imageUrl'] }}" alt="Carátula de {{ item['title'] }}">
         </a>
-        <p class="title">{{ item['title'] }}</p>
-        <p class="artist">{{ item['artists'] }}</p>
-        <p class="format">{{ item['format'] }}</p>
+        <!-- <div class="data">
+            <p class="artist">{{ item['artists'] }}</p>
+            <p class="year">{{ item['year'] }}</p>
+            <p class="format">{{ item['format'] }}</p>
+        </div> -->
+        <!-- <p class="title">{{ item['title'] }}</p> -->
     </div>
     {% endfor %}
+    {% if disks < 8 %}
+    <div class="disk-box add">
+        <p>Vaya, aun no has registrado muchos discos...</p>
+        <p>¿Quieres añadir alguno más?</p>
+        <a class="link-btn add" href="{{ url_for('collection.insert') }}">¡Sí!</a>
+    </div>
+    {% endif %}
+
 </div>
 
 {% endblock %}

@@ -1,8 +1,20 @@
+import math
 from flask import Blueprint, flash, render_template, redirect, request, session, url_for
 from flask_login import login_required, current_user
 from extraccionDatos import *
 from data import *
-from db import get_collection, get_disk, db_delete_user_disk, db_insert_disk
+from db import (
+    get_artists_amount,
+    get_collection,
+    get_collection_page,
+    get_collection_page_filter,
+    get_disk,
+    db_delete_user_disk,
+    db_insert_disk,
+    get_disks_amount,
+    get_disks_amount_filter,
+    get_favourite_format,
+)
 from utils import not_empty, send_modification_email
 
 main = Blueprint("collection", __name__)
@@ -10,22 +22,51 @@ main = Blueprint("collection", __name__)
 
 @main.route("/")
 def auth():
-    return redirect(url_for("collection.view"))
+    return redirect(url_for("collection.disks"))
 
 
-@main.route("/general-view")
+@main.route("/disks", methods=["GET", "POST"])
 @login_required
-def view():
-    collectionData = get_collection(current_user.id_usuario)
+def disks():
+    print(request.args.get("page"))
+    page = max(1, request.args.get("page", type=int, default=1))
+    if request.method == "POST":
+        search = request.form["search"]
+        filterBy = request.form["filter-by"]
+        if filterBy != 'None':
+            collectionData = get_collection_page_filter(
+                current_user.id_usuario, page, filterBy, search
+            )
+            disksAmount = get_disks_amount_filter(current_user.id_usuario, filterBy, search)
+        else:
+            collectionData = get_collection_page(current_user.id_usuario, page)
+            disksAmount = get_disks_amount(current_user.id_usuario)
+    else:
+        collectionData = get_collection_page(current_user.id_usuario, page)
+        disksAmount = get_disks_amount(current_user.id_usuario)
+        filterBy, search = None, None
+    artistsAmount = get_artists_amount(current_user.id_usuario)
+    pagesAmount = (disksAmount + 9) // 10
+    favouriteFormat = get_favourite_format(current_user.id_usuario)
+    if pagesAmount <= 0:
+        pagesAmount = 1
     return render_template(
-        "collection/general_view.html", collectionData=collectionData
+        "collection/disks.html",
+        collectionData=collectionData,
+        artists=artistsAmount,
+        disks=disksAmount,
+        page=page,
+        pagesAmount=pagesAmount,
+        favouriteFormat=favouriteFormat,
+        filterBy=filterBy,
+        search=search,
     )
 
 
-@main.route("/details/<idDisco>")
+@main.route("/details/<idEdicion>")
 @login_required
-def details(idDisco):
-    collectionData = get_disk(idDisco)
+def details(idEdicion):
+    collectionData = get_disk(idEdicion)
     return render_template("collection/details.html", collectionData=collectionData)
 
 
@@ -59,8 +100,8 @@ def insert():
         else:
             flash("No se ha proporcionado un término de búsqueda válido.")
             return redirect(url_for("main.insert"))
-        if search != None and search != "":
-            session["firstSelect"] = False
+        if search != None and search != "" and search != []:
+            session["firstSelectOption"] = False
             if type(search) == str:
                 options = [searchDiscogs(search)]
                 auxSearch = []
@@ -78,7 +119,7 @@ def insert():
             elif scanned:
                 options = searchDiscogsList(search)
                 auxSearch = search
-                session["firstSelect"] = True
+                session["firstSelectOption"] = True
             if options:
                 session["optionsList"] = options
                 session["codesList"] = auxSearch
@@ -102,20 +143,20 @@ def select():
     if "pendingMessage" in session:
         flash(session["pendingMessage"])
         del session["pendingMessage"]
-    if session.get("firstSelect"):
-        session["firstSelect"] = False
+    if session.get("firstSelectOption"):
+        session["firstSelectOption"] = False
         return render_template("collection/insert_select.html", options=[], code="0")
     else:
         try:
-            session["firstSelect"] = False
+            session["firstSelectOption"] = False
             optionsList = session.get("optionsList")  # Objeto list
             options = optionsList.pop(0)
             session["optionsList"] = optionsList
             codesList = session.get("codesList")
             code = codesList.pop(0)
             session["codesList"] = codesList
+            session["lastSearch"] = len(optionsList) == 0
             if options:
-                session["lastSearch"] = len(optionsList) == 0
                 session["options"] = options
                 session["code"] = code
                 options = json.loads(options)
@@ -176,19 +217,21 @@ def selected():
         # session["pendingMessage"] = pendingMessage
         flash(pendingMessage)
     if session.get("lastSearch"):
-        return redirect(url_for("collection.view"))
+        return redirect(url_for("collection.disks"))
     else:
         return redirect(url_for("collection.select"))
 
 
-@main.route("/modify/<idDisco>", methods=["GET", "POST"])
+@main.route("/modify/<idEdicion>", methods=["GET", "POST"])
 @login_required
-def modify(idDisco):
+def modify(idEdicion):
     if request.method == "POST":
         tracklist = []
         index = 0
         while True:
-            original_song_title = request.form.get(f"tracklist[{index}][originalSongTitle]")
+            original_song_title = request.form.get(
+                f"tracklist[{index}][originalSongTitle]"
+            )
             song_title = request.form.get(f"tracklist[{index}][songTitle]")
             original_song_duration = request.form.get(
                 f"tracklist[{index}][originalSongDuration]"
@@ -221,17 +264,18 @@ def modify(idDisco):
             "observations": request.form["observations"],
         }
         send_modification_email(disk)
-        flash("Gracias por tu ayuda. Hemos notificado al administrador para que revise los cambios necesarios.")
-        return redirect(url_for("collection.view"))
+        flash(
+            "Gracias por tu ayuda. Hemos notificado al administrador para que revise los cambios necesarios."
+        )
+        return redirect(url_for("collection.disks"))
     else:
-        diskData = get_disk(idDisco)
+        diskData = get_disk(idEdicion)
         return render_template("collection/modify_register.html", diskData=diskData)
 
 
-@main.route("/delete/<idDisco>")
+@main.route("/delete/<idEdicion>")
 @login_required
-def delete(idDisco):
-    db_delete_user_disk(idDisco, current_user.id_usuario)
-    # title, image = db_delete_user_disk(idDisco, current_user.id_usuario)
+def delete(idEdicion):
+    db_delete_user_disk(idEdicion, current_user.id_usuario)
     flash("Se ha eliminado el disco seleccionado.")
-    return redirect(url_for("collection.view"))
+    return redirect(url_for("collection.disks"))

@@ -7,18 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Creamos el motor sobre el que se conectará
-database_url = (
-    "postgresql://"
-    + p.DB_USER
-    + ":"
-    + p.DB_PASS
-    + "@"
-    + p.DB_HOST
-    + ":"
-    + p.DB_PORT
-    + "/"
-    + p.DB_NAME
-)
+database_url = f"postgresql://{p.DB_USER}:{p.DB_PASS}@{p.DB_HOST}:{p.DB_PORT}/{p.DB_NAME}"
 engine = create_engine(database_url)
 connection = engine.connect()
 Base.metadata.create_all(engine)
@@ -26,7 +15,6 @@ Base.metadata.create_all(engine)
 # Creamos la sesión a través de la cual haremos las consultas
 Session = sessionmaker(bind=engine)
 session = Session()
-
 
 # Comprobar datos para iniciar sesión como usuario
 def db_login(inUsername, inPassword):
@@ -41,14 +29,12 @@ def db_login(inUsername, inPassword):
     except Exception as ex:
         raise Exception(ex)
 
-
-# Buscar usuario por username
+# Buscar usuarios según distintos campos
 def find_username(username):
     try:
         return session.query(User).where(User.username == username).first()
     except Exception as ex:
         raise Exception(ex)
-
 
 def find_email(email):
     try:
@@ -56,13 +42,11 @@ def find_email(email):
     except Exception as ex:
         raise Exception(ex)
 
-
 def find_userid(id):
     try:
         return session.query(User).where(User.id_usuario == id).first()
     except Exception as ex:
         raise Exception(ex)
-
 
 # Crear nuevo usuario
 def db_signup(inUsername, inName, inPassword, inEmail):
@@ -90,7 +74,7 @@ def db_signup(inUsername, inName, inPassword, inEmail):
     except Exception as ex:
         raise Exception(ex)
 
-
+# Modificar contraseña de un usuario
 def change_password(user, password):
     hash = generate_password_hash(password)
     session.query(User).filter(User.username == user.username).update(
@@ -98,7 +82,6 @@ def change_password(user, password):
     )
     session.commit
     return True
-
 
 def db_insert_disk(
     artista,
@@ -201,6 +184,79 @@ def get_collection(usuario):
         collection.append(item)
     return collection
 
+def get_collection_page(usuario, page):
+    min = (page-1) * 10
+    query = f"""SELECT A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, ED.CARATULA
+        FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA INNER JOIN EDICIONES_DISCO ED
+            ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU ON ED.ID_EDICION=EU.ID_EDICION
+        WHERE EU.ID_USUARIO='{usuario}'
+        ORDER BY ED.ID_EDICION ASC
+        LIMIT 10 OFFSET {min}"""
+    result = connection.execute(text(query))
+    rows = result.fetchall()
+    collection = []
+    for row in rows:
+        item = {
+            "title": row.titulo,
+            "artists": row.artista,
+            "format": row.edicion,
+            "year": row.agno,
+            "country": row.pais,
+            "idDisco": row.id_disco,
+            "imageUrl": row.caratula,
+            "idEdicion": row.id_edicion,
+        }
+        collection.append(item)
+    return collection
+
+def get_collection_page_filter(usuario, page, filterBy, search):
+    min = (page-1) * 10
+    search = remove_accents(search)
+    query = f"""SELECT A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, ED.CARATULA
+        FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA INNER JOIN EDICIONES_DISCO ED
+            ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU ON ED.ID_EDICION=EU.ID_EDICION
+        WHERE EU.ID_USUARIO='{usuario}'
+        AND UPPER ({filterBy}) LIKE UPPER('%{search}%')
+        ORDER BY ED.ID_EDICION ASC
+        LIMIT 10 OFFSET {min}"""
+    result = connection.execute(text(query))
+    rows = result.fetchall()
+    collection = []
+    for row in rows:
+        item = {
+            "title": row.titulo,
+            "artists": row.artista,
+            "format": row.edicion,
+            "year": row.agno,
+            "country": row.pais,
+            "idDisco": row.id_disco,
+            "imageUrl": row.caratula,
+            "idEdicion": row.id_edicion,
+        }
+        collection.append(item)
+    return collection
+
+def get_favourite_format(usuario):
+    query = f"""SELECT ED.edicion, COUNT(*) as count
+        FROM ediciones_disco ED INNER JOIN ediciones_usuario EU ON EU.id_edicion = ED.id_edicion
+        WHERE EU.id_usuario = '{usuario}'
+        GROUP BY ED.edicion
+        ORDER BY count DESC
+        LIMIT 1"""
+    result = connection.execute(text(query)).fetchall()
+    if result:
+        return result[0].edicion
+    else:
+        return "hmm... aún no lo tenemos claro"
+
+def get_favourite_format_all():
+    query = f"""SELECT ED.edicion, COUNT(*) as count
+        FROM ediciones_disco ED INNER JOIN ediciones_usuario EU ON EU.id_edicion = ED.id_edicion
+        GROUP BY ED.edicion
+        ORDER BY count DESC
+        LIMIT 1"""
+    result = connection.execute(text(query))
+    return result.fetchall()[0].edicion
 
 def get_tracklist(idDisco):
     query = f"""SELECT CA.id_cancion, CA.cancion, CA.duracion, DC.id_disco
@@ -222,11 +278,10 @@ def get_tracklist(idDisco):
     titulo = result.fetchone()[0]
     return tracklist
 
-
-def get_disk(idDisco):
-    query = f"SELECT * FROM ediciones_disco WHERE id_disco='{idDisco}'"
+def get_disk(idEdicion):
+    query = f"SELECT * FROM ediciones_disco WHERE id_edicion='{idEdicion}'"
     edition = connection.execute(text(query)).fetchone()
-    query = f"SELECT * FROM discos WHERE id_disco='{idDisco}'"
+    query = f"SELECT * FROM discos WHERE id_disco='{edition.id_disco}'"
     disk = connection.execute(text(query)).fetchone()
     idArtista = disk.id_artista
     query = f"SELECT * FROM artistas WHERE id_artista='{idArtista}'"
@@ -234,17 +289,16 @@ def get_disk(idDisco):
     info = {
         "title": disk.titulo,
         "artists": artist.artista,
-        "tracklist": get_tracklist(idDisco),
+        "tracklist": get_tracklist(edition.id_disco),
         "format": edition.edicion,
         "year": edition.agno,
         "country": edition.pais,
-        "idDisco": idDisco,
+        "idDisco": edition.id_disco,
         "idArtista": idArtista,
         "idEdicion": edition.id_edicion,
         "imageUrl": edition.caratula,
     }
     return info
-
 
 def get_all_disks():
     query = f"""SELECT A.ID_ARTISTA, A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, ED.CARATULA
@@ -273,39 +327,88 @@ def get_all_disks():
         collection.append(item)
     return collection
 
-
-def db_delete_user_disk(idDisco, usuario):
-    # Buscamos el id_edicion
-    query = f"""SELECT EU.id_edicion FROM ediciones_usuario EU INNER JOIN ediciones_disco ED ON EU.id_edicion=ED.id_edicion
-        WHERE ED.id_disco='{idDisco}' AND EU.id_usuario='{usuario}'"""
-    result = session.execute(text(query))
+def get_all_disks_page(page):
+    min = (page-1) * 10
+    query = f"""SELECT A.ID_ARTISTA, A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, ED.CARATULA
+        FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA 
+        INNER JOIN EDICIONES_DISCO ED ON D.ID_DISCO=ED.ID_DISCO
+        ORDER BY ED.ID_EDICION ASC
+        LIMIT 10 OFFSET {min}"""
+    result = connection.execute(text(query))
     rows = result.fetchall()
-    idEdicion = rows[0].id_edicion
+    collection = []
+    for row in rows:
+        query = f"SELECT COUNT(*) FROM ediciones_usuario WHERE id_edicion = '{row.id_edicion}'"
+        amount = session.execute(text(query)).fetchone()[0]
+        item = {
+            "title": row.titulo,
+            "artists": row.artista,
+            "format": row.edicion,
+            "year": row.agno,
+            "country": row.pais,
+            "idDisco": row.id_disco,
+            "idEdicion": row.id_edicion,
+            "imageUrl": row.caratula,
+            "amount": amount,
+        }
+        collection.append(item)
+    return collection
 
-    # query = f"SELECT titulo FROM discos WHERE id_disco='{idDisco}'"
-    # result = session.execute(text(query))
-    # title = result.fetchall()[0].titulo
+def get_all_disks_page_filter(page, filterBy, search):
+    min = (page-1) * 10
+    search = remove_accents(search)
+    query = f"""SELECT A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, ED.CARATULA
+        FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA INNER JOIN EDICIONES_DISCO ED
+            ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU ON ED.ID_EDICION=EU.ID_EDICION
+        AND UPPER ({filterBy}) LIKE UPPER('%{search}%')
+        ORDER BY ED.ID_EDICION ASC
+        LIMIT 10 OFFSET {min}"""
+    result = connection.execute(text(query))
+    rows = result.fetchall()
+    collection = []
+    for row in rows:
+        query = f"SELECT COUNT(*) FROM ediciones_usuario WHERE id_edicion = '{row.id_edicion}'"
+        amount = session.execute(text(query)).fetchone()[0]
+        item = {
+            "title": row.titulo,
+            "artists": row.artista,
+            "format": row.edicion,
+            "year": row.agno,
+            "country": row.pais,
+            "idDisco": row.id_disco,
+            "idEdicion": row.id_edicion,
+            "imageUrl": row.caratula,
+            "amount": amount,
+        }
+        collection.append(item)
+    return collection
 
-    # query = f"SELECT caratula FROM ediciones_disco WHERE id_disco='{idDisco}'"
-    # result = session.execute(text(query))
-    # image = result.fetchall()[0].caratula
-
+def db_delete_user_disk(idEdicion, usuario):
     query = f"DELETE FROM ediciones_usuario WHERE id_edicion='{idEdicion}' AND id_usuario='{usuario}'"
-    result = session.execute(text(query))
-    session.commit()
-
-    # return title, image
-
-
-def db_delete_disk(idDisco):
-    db_delete_tracklist(idDisco)
-    db_delete_edition(idDisco)
-    query = f"SELECT * FROM discos WHERE id_disco = '{idDisco}'"
-    idArtista = session.execute(text(query)).fetchone().id_artista
-    query = f"DELETE FROM discos WHERE id_disco = '{idDisco}'"  # Eliminamos el disco
     session.execute(text(query))
-    db_delete_artist(idArtista)
     session.commit()
+
+def db_delete_disk(idEdicion):
+    query = f"SELECT * FROM ediciones_disco WHERE id_edicion = '{idEdicion}'"
+    idDisco = session.execute(text(query)).fetchone().id_disco
+    query = f"DELETE FROM ediciones_usuario WHERE id_edicion = '{idEdicion}'"  # Eliminamos las ediciones de ediciones_usuario
+    session.execute(text(query))
+    query = f"DELETE FROM ediciones_disco WHERE id_edicion = '{idEdicion}'"  # Eliminamos las ediciones de ediciones_disco
+    session.execute(text(query))
+    # Comprobamos si el disco sigue teniendo alguna edicion y si no, lo eliminamos
+    query = f"SELECT COUNT(*) FROM ediciones_disco WHERE id_disco = '{idDisco}'"
+    result = session.execute(text(query)).fetchone()[0]
+    if result > 0:
+        session.commit()
+    else:
+        db_delete_edition(idDisco)
+        db_delete_tracklist(idDisco)
+        query = f"SELECT * FROM discos WHERE id_disco = '{idDisco}'"
+        idArtista = session.execute(text(query)).fetchone().id_artista
+        query = f"DELETE FROM discos WHERE id_disco = '{idDisco}'"  # Eliminamos el disco
+        session.execute(text(query))
+        db_delete_artist(idArtista)
+        session.commit()
 
 def db_modify_disk(disk):
     db_modify_tracklist(disk["tracklist"])
@@ -386,7 +489,6 @@ def db_delete_artist(idArtista):
     session.commit()
     return f"Se ha eliminado el artista con ID {idArtista}."
 
-
 def db_delete_tracklist(idDisco):
     query = f"SELECT id_cancion FROM discos_canciones WHERE id_disco = '{idDisco}'"
     result = session.execute(text(query)).fetchall()
@@ -399,7 +501,6 @@ def db_delete_tracklist(idDisco):
         query = f"DELETE FROM canciones WHERE id_cancion = '{songId}'"  # Eliminamos las canciones de canciones
         result = session.execute(text(query))
 
-
 def db_delete_edition(idDisco):
     query = f"SELECT id_edicion FROM ediciones_disco WHERE id_disco = '{idDisco}'"
     result = session.execute(text(query)).fetchall()
@@ -410,15 +511,13 @@ def db_delete_edition(idDisco):
         query = f"DELETE FROM ediciones_disco WHERE id_edicion = '{editionId}'"  # Eliminamos las ediciones de ediciones_disco
         result = session.execute(text(query))
 
-
 def modString(string):
     return string.replace("'", "''")
-
 
 def get_six(user):
     query = f"""SELECT A.ID_ARTISTA, A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, EU.ID_USUARIO, ED.CARATULA FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA 
         INNER JOIN EDICIONES_DISCO ED ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU ON ED.ID_EDICION=EU.ID_EDICION
-        WHERE EU.ID_USUARIO='{user}' ORDER BY RANDOM() LIMIT 6"""
+        WHERE EU.ID_USUARIO='{user}' ORDER BY RANDOM() LIMIT 8"""
     result = connection.execute(text(query))
     rows = result.fetchall()
     collection = []
@@ -431,10 +530,64 @@ def get_six(user):
             "country": row.pais,
             "idDisco": row.id_disco,
             "imageUrl": row.caratula,
+            "idEdicion": row.id_edicion
         }
         collection.append(item)
     return collection
 
+def get_disks_amount(user):
+    query = f"""SELECT COUNT(*) FROM ediciones_usuario WHERE id_usuario = '{user}'"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
+
+def get_disks_amount_filter(usuario, filterBy, search):
+    search = remove_accents(search)
+    query = f"""SELECT COUNT(*)
+        FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA INNER JOIN EDICIONES_DISCO ED
+            ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU ON ED.ID_EDICION=EU.ID_EDICION
+        WHERE EU.ID_USUARIO='{usuario}'
+        AND UPPER ({filterBy}) LIKE UPPER('%{search}%')"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
+
+def get_artists_amount(user):
+    query = f"""SELECT COUNT(DISTINCT artista) FROM
+        ediciones_usuario AS EU INNER JOIN ediciones_disco AS ED ON eu.id_edicion = ED.id_edicion
+        INNER JOIN discos as DI ON ED.id_disco = DI.id_disco
+        INNER JOIN artistas as AR ON DI.id_artista = AR.id_artista
+        WHERE EU.id_usuario = '{user}'"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
+
+def get_disks_amount_all():
+    query = f"""SELECT COUNT(DISTINCT id_edicion) FROM ediciones_disco"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
+
+def get_artists_amount_all():
+    query = f"""SELECT COUNT(*) FROM artistas"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
+
+def get_disks_amount_all_filter(filterBy, search):
+    query = f"""SELECT COUNT(*)
+        FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA INNER JOIN EDICIONES_DISCO ED
+            ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU ON ED.ID_EDICION=EU.ID_EDICION
+        AND UPPER ({filterBy}) LIKE UPPER('%{search}%')"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
+
+def get_users_amount():
+    query = f"""SELECT COUNT(*) FROM usuarios WHERE role != 'ADMIN'"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
 
 def get_users():
     query = f"""SELECT * FROM usuarios"""
@@ -452,21 +605,40 @@ def get_users():
         collection.append(item)
     return collection
 
+def get_users_page_filter(page, filterBy, search):
+    min = (page-1) * 10
+    search = remove_accents(search)
+    query = f"""SELECT * FROM usuarios WHERE UPPER ({filterBy}) LIKE UPPER('%{search}%') ORDER BY id_usuario ASC LIMIT 10 OFFSET {min}"""
+    result = connection.execute(text(query))
+    rows = result.fetchall()
+    collection = []
+    for row in rows:
+        item = {
+            "idUsuario": row.id_usuario,
+            "username": row.username,
+            "name": row.nombre,
+            "email": row.email,
+            "role": row.role,
+        }
+        collection.append(item)
+    return collection
 
-def db_delete_user(idUsuario):
-    try:
-        query = f"DELETE FROM ediciones_usuario WHERE id_usuario='{idUsuario}'"
-        result = session.execute(text(query))
-        query = f"SELECT * FROM usuarios WHERE id_usuario='{idUsuario}'"
-        username = session.execute(text(query)).fetchone().username
-        query = f"DELETE FROM usuarios WHERE id_usuario='{idUsuario}'"
-        result = session.execute(text(query))
-        session.commit()
-        return username
-    except Exception as e:
-        session.rollback()
-        flash(f"Error al modificar el usuario: {str(e)}")
-
+def get_users_page(page):
+    min = (page-1) * 10
+    query = f"""SELECT * FROM usuarios ORDER BY id_usuario ASC LIMIT 10 OFFSET {min}"""
+    result = connection.execute(text(query))
+    rows = result.fetchall()
+    collection = []
+    for row in rows:
+        item = {
+            "idUsuario": row.id_usuario,
+            "username": row.username,
+            "name": row.nombre,
+            "email": row.email,
+            "role": row.role,
+        }
+        collection.append(item)
+    return collection
 
 def db_delete_user(isUsuario):
     try:
@@ -481,7 +653,6 @@ def db_delete_user(isUsuario):
     except Exception as e:
         session.rollback()
         flash(f"Error al modificar el usuario: {str(e)}")
-
 
 def db_modify_user(user):
     try:
@@ -511,3 +682,36 @@ def db_get_disk(idDisco):
     except Exception as ex:
         raise Exception(ex)
 
+def db_delete_lost_disks():
+    query = f"""SELECT ED.id_edicion
+        FROM ediciones_disco ED
+        LEFT JOIN ediciones_usuario EU
+        ON EU.id_edicion = ED.id_edicion
+        WHERE EU.id_edicion IS NULL"""
+    result = session.execute(text(query)).fetchall()
+    for row in result:
+        db_delete_disk(row.id_edicion)
+    session.commit()
+
+def remove_accents(s):
+    accents = {
+        'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+        'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
+        'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
+        'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U',
+        'ä': 'a', 'ë': 'e', 'ï': 'i', 'ö': 'o', 'ü': 'u',
+        'Ä': 'A', 'Ë': 'E', 'Ï': 'I', 'Ö': 'O', 'Ü': 'U',
+        'â': 'a', 'ê': 'e', 'î': 'i', 'ô': 'o', 'û': 'u',
+        'Â': 'A', 'Ê': 'E', 'Î': 'I', 'Ô': 'O', 'Û': 'U',
+        'ã': 'a', 'õ': 'o', 'ñ': 'n',
+        'Ã': 'A', 'Õ': 'O', 'Ñ': 'N',
+        'ç': 'c', 'Ç': 'C'
+    }
+    
+    return ''.join(accents.get(char, char) for char in s)
+
+def get_songs_amount(idEdicion):
+    query = f"SELECT * FROM ediciones_disco WHERE id_edicion = '{idEdicion}'"
+    idDisco = session.execute(text(query)).fetchone().id_disco
+    query = f"SELECT COUNT(*) FROM discos_canciones WHERE id_disco = '{idDisco}'"
+    return session.execute(text(query)).fetchone().count

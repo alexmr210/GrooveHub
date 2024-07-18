@@ -25,10 +25,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 const th = btn.closest('th');
                 const table = th.closest('table');
                 const headerIndex = Array.from(th.parentNode.children).indexOf(th);
-                const filterValue = th.querySelector('.filter-input').value.trim().toLowerCase();
+                const filterValue = removeAccents(th.querySelector('.filter-input').value.trim().toLowerCase());
 
                 table.querySelectorAll('tbody tr').forEach(row => {
-                    const cellValue = row.children[headerIndex].textContent.trim().toLowerCase();
+                    const cellValue = removeAccents(row.children[headerIndex].textContent.trim().toLowerCase());
                     row.style.display = cellValue.includes(filterValue) ? '' : 'none';
                 });
             });
@@ -54,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     };
-
     addConfirmationDialog();
 });
 
@@ -67,17 +66,25 @@ document.addEventListener("DOMContentLoaded", function () {
     function initializeScanner() {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(function (stream) {
+                document.getElementById('scanText').style.display = "none";
+                document.getElementById('scanButton').style.display = "none";
+
                 const camContainer = document.createElement("div");
                 camContainer.id = "camContainer";
                 camContainer.classList.add("cam-container");
-                document.body.appendChild(camContainer);
+                document.getElementById('scannerBox').appendChild(camContainer);
+
+                const videoContainer = document.createElement("div");
+                videoContainer.id = "videoContainer";
+                videoContainer.classList.add("video-container");
+                document.getElementById('camContainer').appendChild(videoContainer);
 
                 const video = document.createElement("video");
                 video.setAttribute("autoplay", true);
                 video.id = "videoPreview";
                 video.classList.add("video-preview");
                 video.srcObject = stream;
-                camContainer.appendChild(video);
+                videoContainer.appendChild(video);
 
                 const scanInfo = document.createElement("div");
                 scanInfo.id = "scanInfo";
@@ -85,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 camContainer.appendChild(scanInfo);
 
                 const infoText = document.createElement("p");
-                infoText.textContent = "Códigos leídos";
+                infoText.textContent = "Códigos leídos:";
                 scanInfo.appendChild(infoText);
 
                 const codeList = document.createElement("textarea");
@@ -100,7 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 const searchButton = document.createElement("button");
                 searchButton.id = "scan-search";
                 searchButton.innerHTML = "Buscar";
-                searchButton.classList.add("reg-btn");
+                searchButton.classList.add("link-btn");
+                searchButton.classList.add("scan-option-btn");
                 searchButton.addEventListener("click", function () {
                     showLoadingScreen();
                     fetch('/insert', {
@@ -126,44 +134,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const cancelButton = document.createElement("button");
                 cancelButton.innerHTML = "Cancelar";
-                cancelButton.classList.add("reg-btn");
+                cancelButton.classList.add("link-btn");
+                cancelButton.classList.add("scan-option-btn");
                 cancelButton.addEventListener("click", function () {
                     scannedCodes = [];
                     codeList.value = "";
                     stream.getTracks().forEach(track => track.stop());
+                    document.getElementById('scanText').style.display = "block";
+                    document.getElementById('scanButton').style.display = "flex";
                     camContainer.remove();
                     Quagga.stop();
                     Quagga.offDetected(onDetected);
                 });
                 scanInfo.appendChild(cancelButton);
 
-                // Crear la imagen de pregunta
-                const questionImage = document.createElement("img");
-                questionImage.src = "/static/img/question.svg";
-                questionImage.classList.add("question-image");
-
-                // Crear el cuadro de texto emergente
-                const hoverText = document.createElement("div");
-                hoverText.classList.add("hover-text");
-                hoverText.textContent = "¿Hay algún error en la lectura? Puedes modificar manualmente los códigos escaneados o eliminar los que finalmente no quieras buscar. Cuando hayas acabado, pulsa \"Buscar\" para hacerte con tus discos.";
-
-                // Añadir la imagen y el cuadro de texto a scanInfo
-                scanInfo.appendChild(questionImage);
-                scanInfo.appendChild(hoverText);
-
-                // Mostrar el cuadro de texto al hacer hover sobre la imagen
-                questionImage.addEventListener("mouseover", function () {
-                    hoverText.style.display = "block";
-                });
-                questionImage.addEventListener("mouseout", function () {
-                    hoverText.style.display = "none";
-                });
-
                 function onDetected(result) {
                     const code = result.codeResult.code;
                     if (!scannedCodes.includes(code)) {
                         scannedCodes.push(code);
                         codeList.value = scannedCodes.join("\n");
+
+                        // Pausar la lectura de códigos
+                        isPaused = true;
+                        Quagga.pause();
+
+                        // Mostrar el mensaje flotante
+                        const message = document.createElement("div");
+                        message.className = "code-read-message";
+                        message.textContent = "Código leído: " + code;
+                        video.parentElement.appendChild(message);
+
+                        setTimeout(() => {
+                            message.classList.add("hide");
+                            setTimeout(() => {
+                                message.remove();
+                                Quagga.start();
+                            }, 500);
+                        }, 1000);
                     }
                 }
 
@@ -244,3 +251,23 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.appendChild(loadingScreen);
     }
 });
+
+// Función para eliminar acentos de una cadena
+function removeAccents(str) {
+    const accents = {
+        'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+        'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
+        'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
+        'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U',
+        'ä': 'a', 'ë': 'e', 'ï': 'i', 'ö': 'o', 'ü': 'u',
+        'Ä': 'A', 'Ë': 'E', 'Ï': 'I', 'Ö': 'O', 'Ü': 'U',
+        'â': 'a', 'ê': 'e', 'î': 'i', 'ô': 'o', 'û': 'u',
+        'Â': 'A', 'Ê': 'E', 'Î': 'I', 'Ô': 'O', 'Û': 'U',
+        'ã': 'a', 'õ': 'o', 'ñ': 'n',
+        'Ã': 'A', 'Õ': 'O', 'Ñ': 'N',
+        'ç': 'c', 'Ç': 'C'
+    };
+
+    return str.split('').map(char => accents[char] || char).join('');
+}
+

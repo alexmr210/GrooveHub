@@ -2,99 +2,97 @@
 
 {% block customJS %}
 <script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+<script src="{{ url_for('static', filename='js/disks.js') }}"></script>
 {% endblock %}
 
 {% block title %}
-Administrador
+Mi colección
 {% endblock %}
 
 {% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/disks.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/users.css') }}">
 {% endblock %}
 
 {% block bodyContent %}
-<div class="title">
-    <h1>Usuarios en la base de datos</h1>
+<div class="title-box">
+    <div class="title">
+        <h1>Usuarios</h1>
+        <div class="filtered">
+            {% if search and filterBy %}
+            Filtrando por {{ filterBy }} "{{ search }}"
+            {% endif %}
+        </div>
+        <div class="btns">
+            <div class="pagination">
+                {% if 1 == page %}
+                <p class="deactivated">◀</p>
+                {% else %}
+                <a href="{{ url_for('admin.view_users', page=page-1) }}">◀</a>
+                {% endif %}
+                <p>{{ page }}</p>
+                {% if pagesAmount == page %}
+                <p class="deactivated">▶</p>
+                {% else %}
+                <a href="{{ url_for('admin.view_users', page=page+1) }}">▶</a>
+                {% endif %}
+            </div>
+            <a href="" class="link-btn filter-btn" title="Filtrar" id="filter-btn"></a>
+        </div>
+    </div>
+    <div class="filter-box" id="filter-box">
+        <p>Filtrar por:</p>
+        <form action="/admin/users" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="custom-select-wrapper">
+                <div class="custom-select">
+                    <div class="custom-select-trigger">
+                        <span></span>
+                    </div>
+                    <div class="custom-options">
+                        <span class="custom-option selected" data-value="username">Userame</span>
+                        <span class="custom-option" data-value="nombre">Nombre</span>
+                        <span class="custom-option" data-value="email">Correo electrónico</span>
+                        <span class="custom-option" data-value="role">Rol</span>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="filter-by" value="username" id="filter-by">
+            <input class="search-bar" type="text" name="search" id="search">
+            <button type="submit" class="search-btn" id="manual-search"></button>
+        </form>
+    </div>
 </div>
-<table class="coll-tbl">
-    <thead>
-        <tr>
-            <th>Username
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Nombre
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Correo electrónico
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Rol
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <select list="role-types" name="role" class="filter-input">
-                            <option value="">-Borrar-</option>
-                            <option value="USER">USER</option>
-                            <option value="ADMIN">ADMIN</option>
-                        </select>
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in userData %}
-        <tr>
-            <td>{{ item['username'] }}</td>
-            <td>{{ item['name'] }}</td>
-            <td>{{ item['email'] }}</td>
-            <td>{{ item['role'] }}</td>
-            <td>
-                <a href="{{ url_for('admin.modify_user', idUsuario=item['idUsuario']) }}" class="tbl-btn modify"
-                    title="Solicitar un cambio para este disco"></a>
-                <a href="{{ url_for('admin.delete_user', idUsuario=item['idUsuario']) }}" class="tbl-btn delete"
-                    title="Eliminar"
-                    data-confirm="¿Estás seguro de que quieres eliminar el usuario {{item['name']}}?"></a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+<div class="box">
+    <div class="table-box">
+        <table class="coll-tbl">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Nombre</th>
+                    <th>Correo electrónico</th>
+                    <th>Rol</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in userData %}
+                <tr>
+                    <td>{{ item['username'] }}</td>
+                    <td>{{ item['name'] }}</td>
+                    <td>{{ item['email'] }}</td>
+                    <td>{{ item['role'] }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.modify_user', idUsuario=item['idUsuario']) }}" class="link-btn modify-btn user-tbl-btn"
+                            title="Solicitar un cambio para este disco"></a>
+                        <a href="{{ url_for('admin.delete_user', idUsuario=item['idUsuario']) }}" class="link-btn delete-btn user-tbl-btn"
+                            title="Eliminar"
+                            data-confirm="¿Estás seguro de que quieres eliminar el usuario {{item['name']}}?"></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

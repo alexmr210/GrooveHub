@@ -1,23 +1,24 @@
+import logging
 from flask import redirect, render_template, url_for, session
 from flask_login import LoginManager, login_required, current_user
 from flask_wtf import CSRFProtect
 from config import config as p
+from pathlib import Path
 import config
 from routes import (
     admin_routes,
     auth_routes,
     collection_routes,
     error_routes,
-    user_routes,
 )
 from db import *
-from models import *
+
+# from models import *
 
 # Accedemos a la configuración global e inicializamos la gestión de usuarios
 config.init()
 login_manager_app = LoginManager()
 csrf = CSRFProtect()
-
 
 @login_manager_app.user_loader
 def load_user(id):
@@ -36,18 +37,16 @@ def home():
         return redirect(url_for("admin.home"))
     else:
         collectionData = get_six(current_user.id_usuario)
-        return render_template("home.html", collectionData=collectionData)
+        artists = get_artists_amount(current_user.id_usuario)
+        disks = get_disks_amount(current_user.id_usuario)
+        return render_template(
+            "home.html", collectionData=collectionData, artists=artists, disks=disks
+        )
 
 
-# PRUEBAS
-@config.app.route("/test/<idDisco>")
-def test(idDisco):
-    disco = db_get_disk(idDisco)
-    canciones = disco.canciones
-    cancion = canciones[0].cancion
-    titulo = cancion.cancion
-    return render_template("test.html", info=disco)
-
+@config.app.route("/contact")
+def contact():
+    return render_template("contact.html")
 
 if __name__ == "__main__":
     # Configuration
@@ -55,7 +54,6 @@ if __name__ == "__main__":
 
     # Blueprints
     config.app.register_blueprint(auth_routes.main, url_prefix="/auth")
-    config.app.register_blueprint(user_routes.main, url_prefix="/user")
     config.app.register_blueprint(admin_routes.main, url_prefix="/admin")
     config.app.register_blueprint(collection_routes.main, url_prefix="/")
 
@@ -68,5 +66,11 @@ if __name__ == "__main__":
     # Start
     csrf.init_app(config.app)
     login_manager_app.init_app(config.app)
-    config.app.run()
-    # app.run(host="0.0.0.0")
+    # config.app.run()
+
+    config.app.run(host="0.0.0.0", port=5000)
+
+    # PROJECT_DIR = Path(__file__).parent
+    # cert_path = PROJECT_DIR / 'private/cert.pem'
+    # key_path = PROJECT_DIR / 'private/key.pem'
+    # config.app.run(host="0.0.0.0", port=5000, ssl_context=(cert_path, key_path))

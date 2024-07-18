@@ -1,7 +1,9 @@
 ### Fichero de configuración
 
 
+from datetime import timedelta
 from flask import Flask
+# from flask_sslify import SSLify
 
 
 class Config:
@@ -19,6 +21,7 @@ class Config:
     MAIL_USERNAME = "dummyempresa16@gmail.com"
     MAIL_PASSWORD = "fxiinnlvizvhrynq"
     MAIL_TECH = "groovehubtechnicalservice@gmail.com"
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=45)
 
 
 config = Config
@@ -27,4 +30,6 @@ config = Config
 def init():
     global app
     app = Flask(__name__)
+    # SSLify(app)
     app.config.from_object(Config)
+    app.secret_key = Config.SECRET_KEY

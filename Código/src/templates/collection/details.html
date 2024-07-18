@@ -9,41 +9,29 @@ Mi colección
 {% endblock %}
 
 {% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/details.css') }}">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}"> -->
 {% endblock %}
 
 {% block bodyContent %}
 <div class="box">
-    <div class="info">
-        <h1 title="Título">{{ collectionData['title'] }}</h1>
-        <img src="{{ collectionData['imageUrl'] }}">
-        <div class="details">
-            <p title="Artista" class="info-artist">{{ collectionData['artists'] }}</p>
-            <div class="sep"></div>
-            <p title="Formato" class="info-format">{{ collectionData['format'] }}</p>
-            <p title="Año" class="info-year">{{ collectionData['year'] }}</p>
-            <p title="País" class="info-country">{{ collectionData['country'] }}</p>
-        </div>
+    <h1 class="title" title="Título">{{ collectionData['title'] }}</h1>
+    <div class="details-btns">
+        <a href="{{ url_for('collection.delete', idEdicion=collectionData['idEdicion']) }}"
+            class="link-btn details-btn delete-btn" title="Eliminar disco"
+            data-confirm="¿Estás seguro de que quieres eliminar {{collectionData['title']}} de tu colección?"></a>
+        <a href="{{ url_for('collection.modify', idEdicion=collectionData['idEdicion']) }}"
+            class="link-btn details-btn modify-btn" title="Solicitar una modificación"></a>
+        <a href="javascript:history.back()" class="link-btn details-btn back-btn" title="Volver"></a>
+    </div>
+    <h3 title="Artista" class="artist">{{ collectionData['artists'] }}</h3>
+    <img src="{{ collectionData['imageUrl'] }}">
+    <div class="details">
+        <p title="Año" class="info-year">{{ collectionData['year'] }}</p>
+        <p title="País" class="info-country">{{ collectionData['country'] }}</p>
+        <p title="Formato" class="info-format">{{ collectionData['format'] }}</p>
     </div>
     <table class="tracklist">
-        <thead>
-            <tr>
-                <th>Canciones
-                    <div class="sort-menu">
-                        <div class="sort">
-                            <p>Ordenar</p>
-                            <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                            <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                        </div>
-                        <div class="filter">
-                            <input type="text" class="filter-input" placeholder="Filtrar">
-                            <button class="filter-btn"></button>
-                        </div>
-                    </div>
-                </th>
-            </tr>
-        </thead>
         <tbody>
             {% for item in collectionData['tracklist'] %}
             <tr>
@@ -53,9 +41,6 @@ Mi colección
             {% endfor %}
         </tbody>
     </table>
-    <div class="details-btns">
-        <a href="javascript:history.back()" class="link-btn details-btn">Volver</a>
-        <a href="{{ url_for('collection.modify', idDisco=collectionData['idDisco']) }}" class="link-btn details-btn">Solicitar un cambio</a>
-    </div>
 </div>
+
 {% endblock %}

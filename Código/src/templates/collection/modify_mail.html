@@ -15,7 +15,7 @@ Nuevo disco
 {% block bodyContent %}
 
 <h4>Modificaciones:</h4>
-<form action="/modify/{{ diskData.idDisco }}" method="POST">
+<form action="/modify/{{ diskData.idEdicion }}" method="POST">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form">
         <img src="{{ diskData.imageUrl }}">

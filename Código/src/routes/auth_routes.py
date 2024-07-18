@@ -78,7 +78,6 @@ def reset_verified(token):
         return redirect(url_for("auth.login"))
     return render_template("auth/reset_verified.html")
 
-
 @main.route("/logout")
 def logout():
     logout_user()

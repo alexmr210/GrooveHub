@@ -5,8 +5,8 @@ Nuevo disco
 {% endblock %}
 
 {% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/video.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/insert.css') }}">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/video.css') }}"> -->
 {% endblock %}
 
 {% block customJS %}
@@ -15,52 +15,79 @@ Nuevo disco
 {% endblock %}
 
 {% block bodyContent %}
-
-<h1>Agregar un nuevo disco</h1>
-<h2>¿Cómo prefieres continuar?</h2>
-<p>Escánear código de barras</p>
-<button id="scanButton">Escanear</button>
-<div id="scanResult"></div>
-<p>Buscar manualmente</p>
-<form action="/insert" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="form">
-        <input type="text" name="search" id="search">
-        <button type="submit" class="btn-submit" id="manual-search">Buscar</button>
+<div class="search-box simple-search">
+    <div class="search-title">
+        <h3>Búsqueda simple</h3>
         <img src="/static/img/question.svg" class="question-image">
-        <div class="hover-text">Recomendamos realizar la búsqueda por el código de barras del disco. Los discos antiguos
+        <div class="hover-text">Recomendamos realizar la búsqueda por el código de barras del disco. Los discos
+            antiguos
             no tienen código de barras, pero sí un código que los identifica, ¡fíjate en la parte de atrás! Si no lo
-            encuentras, también puedes buscar por el título del disco.</div>
+            encuentras, también puedes buscar por el título del disco o cualquier otro dato.</div>
         </img>
     </div>
-</form>
-<h3>Búsqueda avanzada</h3>
-<img src="/static/img/question.svg" class="question-image">
-<div class="hover-text">Rellena los campos que conozcas y deja vacíos los que no.</div>
-<form action="/insert" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="form">
-        <p>Nombre del disco</p>
-        <input type="text" name="title">
-        <p>Artista</p>
-        <input type="text" name="artist">
-        <p>Año</p>
-        <input type="number" name="year">
-        <p>País</p>
-        <input type="text" name="country">
-        <p>Código de barras</p>
-        <input type="number" name="barcode">
-        <p>Formato</p>
-        <input list="format-types" name="format">
-        <datalist id="format-types">
-            <option value="Vinilo"></option>
-            <option value="CD"></option>
-            <option value="Cassette"></option>
-            <option value="DVD"></option>
-            <option value="Paquete"></option>
-        </datalist>
-        <button type="submit" class="btn-submit" id="advanced-search">Buscar</button>
+    <form action="/insert" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="text" name="search" id="search">
+        <button type="submit" class="search-btn" id="manual-search"></button>
+    </form>
+</div>
+<div class="search-box advanced-search">
+    <div class="search-title">
+        <h3>Búsqueda avanzada</h3>
+        <img src="/static/img/question.svg" class="question-image">
+        <div class="hover-text">Rellena los campos que conozcas y deja vacíos los que no.</div>
     </div>
-</form>
-
+    <form action="/insert" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="advanced-search-field">
+            <p>Nombre del disco</p>
+            <input type="text" name="title">
+        </div>
+        <div class="advanced-search-field">
+            <p>Artista</p>
+            <input type="text" name="artist">
+        </div>
+        <div class="advanced-search-field">
+            <p>Año</p>
+            <input type="number" name="year">
+        </div>
+        <div class="advanced-search-field">
+            <p>País</p>
+            <input type="text" name="country">
+        </div>
+        <div class="advanced-search-field">
+            <p>Código de barras</p>
+            <input type="number" name="barcode">
+        </div>
+        <div class="advanced-search-field">
+            <p>Formato</p>
+            <div class="advanced-search-field-last">
+                <input list="format-types" name="format">
+                <datalist id="format-types">
+                    <option value="Vinilo"></option>
+                    <option value="CD"></option>
+                    <option value="Cassette"></option>
+                    <option value="DVD"></option>
+                    <option value="Paquete"></option>
+                </datalist>
+                <button type="submit" class="btn-submit search-btn" id="advanced-search"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="search-box scanner">
+    <div class="search-title">
+        <h3>Búsqueda inteligente</h3>
+        <img src="/static/img/question.svg" class="question-image">
+        <div class="hover-text">Pulsa en el botón para abrir la cámara. Acerca el código de barras de tu disco para que la cámara lo detecte, ¡puedes leer tantos como quieras! Cuando hayas acabado, pulsa Buscar para añadir tus discos. Si hay algún error en cualquiera de los códigos, puedes modificarlo en la lista.</div>
+        </img>
+    </div>
+    <div class="scanner-box" id="scannerBox">
+        <p id="scanText">¡Ahora podemos leer el código de barras de tus discos para añadirlos a tu colección!</p>
+        <button id="scanButton" class="link-btn">Abrir la cámara
+            <img src="{{ url_for('static', filename='img/camera.svg') }}" alt="">
+        </button>
+        <div id="scanResult"></div>
+    </div>
+</div>
 {% endblock %}

@@ -77,7 +77,6 @@ th:hover .sort-menu {
 }
 
 td.limited {
-    /* word-wrap: normal; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -173,3 +172,20 @@ table.tracklist th {
 table.tracklist {
     width: 70%;
 }
+
+/* table.tracklist-modify {
+    width: 100%;
+    border: none;
+    margin: none;
+    padding: none;
+    border-collapse: collapse;
+} */
+
+table.tracklist-modify {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+table.tracklist-modify td,
+table.tracklist-modify th {}

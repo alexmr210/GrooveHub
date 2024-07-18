@@ -1,0 +1,33 @@
+.body-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 5rem minmax(25rem, auto);
+    grid-template-areas:
+        "title"
+        "table";
+    background-color: var(--oscuro2);
+    padding: 1rem;
+    height: 100%;
+}
+
+.tbl-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.7;
+}
+
+.tbl-btn {
+    display: inline-block;
+    width: 1.6em;
+    height: 1.6em;
+    opacity: 0.5;
+    transition-duration: 0.3s;
+    margin-right: 3px;
+}
+
+.modify {
+    background: transparent url(../img/pencil.svg) center/1.8em auto no-repeat;
+}
+
+.delete {
+    background: transparent url(../img/trash.svg) center/1.8em auto no-repeat;
+}

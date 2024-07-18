@@ -2,6 +2,19 @@
 
 {% block customJS %}
 <script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+<script src="{{ url_for('static', filename='js/disks.js') }}"></script>
+<script>
+    const collectionData = {{ collectionData | tojson }};
+    const disks = {{ disks }};
+    const artists = {{ artists }};
+    const favouriteFormat = "{{ favouriteFormat }}";
+    const urls = {
+        details: "{{ url_for('admin.details', idEdicion='') }}",
+        modify: "{{ url_for('admin.modify_disk', idEdicion='') }}",
+        delete: "{{ url_for('admin.delete_disk', idEdicion='') }}"
+    };
+    const text = "<p>¡Groovehub ya cuenta con <b>{{ users }}</b> usuarios!</p><p>Entre todos ya han registrado <b>{{ disks }}</b> discos de <b>{{ artists }}</b> artistas distintos.</p><p>¡Y parece que el formato por excelencia es el <b>{{ favouriteFormat }}</b>!</p>"
+</script>
 {% endblock %}
 
 {% block title %}
@@ -9,154 +22,102 @@ Mi colección
 {% endblock %}
 
 {% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/disks.css') }}">
 {% endblock %}
 
 {% block bodyContent %}
-<div class="title">
-    <h1>Mi colección</h1>
-    <a href="{{ url_for('collection.insert') }}" class="link-btn">Nuevo disco</a>
+<div class="title-box">
+    <div class="title">
+        <h1>Discos</h1>
+        <div class="filtered">
+            {% if search and filterBy %}
+            Filtrando por {{ filterBy }} "{{ search }}"
+            {% endif %}
+        </div>
+        <div class="btns">
+            <div class="pagination">
+                {% if 1 == page %}
+                <p class="deactivated">◀</p>
+                {% else %}
+                <a href="{{ url_for('admin.view_disks', page=page-1) }}">◀</a>
+                {% endif %}
+                <p>{{ page }}</p>
+                {% if pagesAmount == page %}
+                <p class="deactivated">▶</p>
+                {% else %}
+                <a href="{{ url_for('admin.view_disks', page=page+1) }}">▶</a>
+                {% endif %}
+            </div>
+            <a href="" class="link-btn filter-btn" title="Filtrar" id="filter-btn"></a>
+            <a href="{{ url_for('admin.delete_lost_disks') }}" class="link-btn delete-btn"
+                title="Eliminar discos perdidos"
+                data-confirm="Esto eliminará todos los discos no asociados a ningún usuario. ¿Seguro que quieres continuar?"></a>
+        </div>
+    </div>
+    <div class="filter-box" id="filter-box">
+        <p>Filtrar por:</p>
+        <form action="/admin/disks" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="custom-select-wrapper">
+                <div class="custom-select">
+                    <div class="custom-select-trigger">
+                        <span></span>
+                    </div>
+                    <div class="custom-options">
+                        <span class="custom-option selected" data-value="titulo">Título</span>
+                        <span class="custom-option" data-value="ED.id_edicion">ID</span>
+                        <span class="custom-option" data-value="artista">Artista</span>
+                        <span class="custom-option" data-value="edicion">Formato</span>
+                        <span class="custom-option" data-value="agno">Año</span>
+                        <span class="custom-option" data-value="pais">País</span>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="filter-by" value="titulo" id="filter-by">
+            <input class="search-bar" type="text" name="search" id="search">
+            <button type="submit" class="search-btn" id="manual-search"></button>
+        </form>
+    </div>
 </div>
-<table class="coll-tbl">
-    <thead>
-        <tr>
-            <th>Carátula</th>
-            <th>ID Disco
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>ID Edición
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Título
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Artista
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Formato
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Año
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>País
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Cant.
-                <div class="sort-menu">
-                    <div class="sort">
-                        <p>Ordenar</p>
-                        <button class="sort-btn sort-asc" title="Ascendente">🡹</button>
-                        <button class="sort-btn sort-desc" title="Descendente">🡻</button>
-                    </div>
-                    <div class="filter">
-                        <input type="text" class="filter-input" placeholder="Filtrar">
-                        <button class="filter-btn"></button>
-                    </div>
-                </div>
-            </th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in collectionData %}
-        <tr>
-            <td>
-                <a href="{{ url_for('collection.details', idDisco=item['idDisco']) }}" title="{{ item['title'] }}">
-                    <img src="{{ item['imageUrl'] }}" alt="Carátula de {{ item['title'] }}">
-                </a>
-            </td>
-            <td>{{ item['idDisco'] }}</td>
-            <td class="limited" title="{{ item['idEdicion'] }}">{{ item['idEdicion'] }}</td>
-            <td>{{ item['title'] }}</td>
-            <td>{{ item['artists'] }}</td>
-            <td>{{ item['format'] }}</td>
-            <td>{{ item['year'] }}</td>
-            <td>{{ item['country'] }}</td>
-            <td>{{ item['amount'] }}</td>
-            <td>
-                <a href="{{ url_for('collection.details', idDisco=item['idDisco']) }}" class="tbl-btn view"
-                    title="Ver detalles"></a>
-                <a href="{{ url_for('admin.modify_disk', idDisco=item['idDisco']) }}" class="tbl-btn modify"
-                    title="Solicitar un cambio para este disco"></a>
-                <a href="{{ url_for('admin.delete_disk', idDisco=item['idDisco']) }}" class="tbl-btn delete"
-                    title="Eliminar"
-                    data-confirm="¿Estás seguro de que quieres eliminar {{item['title']}} de tu colección?"></a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="box">
+    <div class="table-box">
+        <table class="coll-tbl">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th class="limited">ID</th>
+                    <th>Artista</th>
+                    <th>Formato</th>
+                    <th>Año</th>
+                    <th>País</th>
+                    <th>Cantidad</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in collectionData %}
+                <tr>
+                    <td>{{ item['title'] }}</td>
+                    <td class="limited" title="{{ item['idEdicion'] }}">{{ item['idEdicion'] }}</td>
+                    <td>{{ item['artists'] }}</td>
+                    <td>{{ item['format'] }}</td>
+                    <td>{{ item['year'] }}</td>
+                    <td>{{ item['country'] }}</td>
+                    <td>{{ item['amount'] }}</td>
+                    <td>
+                        <a href="" class="link-btn info-btn" title="Filtrar" id="filter-btn"></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="side-msg" class="message">
+    <p>¡Groovehub ya cuenta con <b>{{ users }}</b> usuarios!</p>
+    <p>Entre todos ya han registrado <b>{{ disks }}</b> discos de <b>{{ artists }}</b> artistas distintos.</p>
+    <p>¡Y parece que el formato por excelencia es el <b>{{ favouriteFormat }}</b>!</p>
+</div>
 
+<!-- <div class="empty"></div> -->
 {% endblock %}

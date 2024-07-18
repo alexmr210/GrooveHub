@@ -8,16 +8,6 @@ Restablecer contraseña
 <div class="text-center mt-4 name">
     Recuperar contraseña
 </div>
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-{% for message in messages %}
-<div class="alert" role="alert">
-    <p>{{ message }}</p>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
 <form method="POST">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form">

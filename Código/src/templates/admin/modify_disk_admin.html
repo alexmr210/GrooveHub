@@ -1,54 +1,82 @@
 {% extends session.get("layout") %}
 
-{% block title %}
-Nuevo disco
-{% endblock %}
-
-{% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-{% endblock %}
-
 {% block customJS %}
 <script src="{{ url_for('static', filename='js/collection.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 {% endblock %}
 
-{% block bodyContent %}
+{% block title %}
+Mi colección
+{% endblock %}
 
-<h4>Modificaciones:</h4>
-<form action="/admin/modify/{{ diskData.idDisco }}" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="form">
-        <img src="{{ diskData.imageUrl }}">
-        <p>Título</p>
-        <input type="text" name="title" value="{{ diskData.title }}">
-        <p>Artista</p>
-        <input type="text" name="artists" value="{{ diskData.artists }}">
-        <p>Formato</p>
-        <input type="text" name="format" value="{{ diskData.format }}">
-        <p>Año</p>
-        <input type="text" name="year" value="{{ diskData.year }}">
-        <p>País</p>
-        <input type="text" name="country" value="{{ diskData.country }}">
-        <input type="hidden" name="idDisco" value="{{ diskData.idDisco }}">
-        <input type="hidden" name="idArtista" value="{{ diskData.idArtista }}">
-        <input type="hidden" name="idEdicion" value="{{ diskData.idEdicion }}">
-        {% for song in diskData.tracklist %}
-        <div class="song">
-            <input type="hidden" name="tracklist[{{ loop.index0 }}][songId]" value="{{ song.idCancion }}">
-            <p>Canción</p>
-            <input type="text" name="tracklist[{{ loop.index0 }}][songTitle]" value="{{ song.songTitle }}">
-            <p>Duración</p>
-            <input type="text" name="tracklist[{{ loop.index0 }}][songDuration]" value="{{ song.songDuration }}">
-            <input type="checkbox" id="delete" name="tracklist[{{ loop.index0 }}][delete]" value="True">
-            <label for="delete">Eliminar canción</label><br>
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modify_register.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+<form action="/admin/modify/{{ diskData.idEdicion }}" method="POST" id="modify-form" class="modify-form">
+    <div class="box">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <input type="hidden" name="originalTitle" value="{{ diskData.title }}">
+        <input class="title" type="text" name="title" value="{{ diskData.title }}">
+
+        <div class="details-btns">
+            <a onclick="document.getElementById('modify-form').submit()" href="#" class="link-btn details-btn send-btn"
+                title="Enviar"></a>
+            <a href="javascript:history.back()" class="link-btn details-btn back-btn" title="Volver"></a>
         </div>
-        {% endfor %}
-        <div id="newSongs"></div>
-        <button type="button" onclick="addSong()">Añadir canción</button>
-        <input type="textarea" name="observations" placeholder="Observaciones">
-        <button type="submit" class="btn-submit">Enviar</button>
+
+        <input type="hidden" name="originalArtist" value="{{ diskData.artists }}">
+        <input type="text" name="artists" value="{{ diskData.artists }}" class="artist">
+
+        <img src="{{ diskData['imageUrl'] }}">
+        <div class="details">
+            <input type="hidden" name="originalFormat" value="{{ diskData.format }}">
+            <input type="text" name="format" value="{{ diskData.format }}" class="info-format">
+            <input type="hidden" name="originalYear" value="{{ diskData.year }}">
+            <input type="text" name="year" value="{{ diskData.year }}" class="info-year">
+            <input type="hidden" name="originalCountry" value="{{ diskData.country }}">
+            <input type="text" name="country" value="{{ diskData.country }}" class="info-country">
+            <input type="hidden" name="idDisco" value="{{ diskData.idDisco }}">
+            <input type="hidden" name="idArtista" value="{{ diskData.idArtista }}">
+            <input type="hidden" name="idEdicion" value="{{ diskData.idEdicion }}">
+        </div>
+        <table class="tracklist tracklist-modify">
+            <tbody>
+                {% for song in diskData.tracklist %}
+                <tr>
+                    <input type="hidden" name="tracklist[{{ loop.index0 }}][songId]" value="{{ song.idCancion }}">
+                    <td>
+                        <input type="text" name="tracklist[{{ loop.index0 }}][songTitle]" value="{{ song.songTitle }}"
+                            class="song-input admin">
+                    </td>
+                    <td>
+                        <input type="text" name="tracklist[{{ loop.index0 }}][songDuration]"
+                            value="{{ song.songDuration }}" class="duration-input">
+                    </td>
+                    <td>
+                        <div class="delete-song">
+                            <input class="checkbox" type="checkbox" id="delete"
+                                name="tracklist[{{ loop.index0 }}][delete]" value="True">
+                            <div class="delete-icon"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="new-songs">
+            <button type="button" onclick="addSong()">Añadir canción</button>
+            <input type="hidden" name="new_songs_amount" value="0" id="new_songs_amount">
+            <table class="tracklist tracklist-modify" id="new_songs">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+
     </div>
 </form>
 

@@ -1,0 +1,290 @@
+.body-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 0 auto;
+    grid-template-areas:
+        "alert alert"
+        "simple scanner"
+        "advanced scanner";
+    background-color: var(--oscuro2);
+    /* gap: 1.3rem; */
+    padding: 1.35rem;
+}
+
+.search-box {
+    background-color: var(--claro1);
+    border-radius: 1.5rem;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    margin: 0.65rem;
+}
+
+.simple-search {
+    grid-area: simple;
+}
+
+.advanced-search {
+    grid-area: advanced;
+}
+
+.search-btn {
+    display: inline-block;
+    padding: 0.8rem;
+    text-decoration: none;
+    color: var(--oscuro2);
+    font-weight: 500;
+    text-align: center;
+    margin: 0.4rem 0rem;
+    border-radius: 10em;
+    transition-duration: 0.2s;
+    width: 2rem;
+    height: 2rem;
+    background: var(--amarillo1) url(../img/magnifying-glass.svg) center/1.3em auto no-repeat;
+    border: none;
+    box-shadow: 3px 3px 3px 0px rgb(113, 113, 115),
+        -3px -3px 3px 0px rgb(239, 239, 239);
+}
+
+.search-btn:hover {
+    background: var(--naranja2) url(../img/magnifying-glass.svg) center/1.31em auto no-repeat;
+    font-weight: bold;
+    box-shadow: inset 3px 3px 3px 0px rgba(113, 113, 115, 0.5);
+}
+
+.search-title {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.search-title .question-image {
+    margin-left: auto;
+    display: inline-block;
+    width: 1.6rem;
+    cursor: pointer;
+    z-index: 11;
+    position: relative;
+}
+
+.hover-text {
+    display: none;
+    position: absolute;
+    top: 1.35rem;
+    right: 1.35rem;
+    width: auto;
+    max-width: 75%;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0px 0px 15px 0px rgb(25, 25, 26);
+    box-sizing: border-box;
+    text-align: justify;
+    z-index: 12;
+}
+
+.question-image:hover+.hover-text {
+    display: block;
+}
+
+.body-container form input {
+    border-radius: 5rem;
+    border: none;
+    box-shadow: inset 4px 3px 4px 0px rgb(113, 113, 115),
+        inset -3px -3px 3px 0px rgb(239, 239, 239);
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 1.7rem;
+    align-items: center;
+}
+
+.simple-search form {
+    margin: 0.5rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.simple-search form input {
+    height: 2rem;
+    width: 100%;
+}
+
+.simple-search form .search-btn,
+.advanced-search-field-last .search-btn {
+    margin-left: 0.5rem;
+    box-shadow: 3px 3px 3px 0px rgb(113, 113, 115),
+        -3px -3px 3px 0px rgb(239, 239, 239);
+}
+
+.advanced-search form {
+    margin: 0.5rem;
+    width: calc(100% - 1rem);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    column-gap: 20px;
+}
+
+.advanced-search-field input {
+    width: calc(100% - 20px);
+}
+
+.advanced-search-field-last {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 2rem;
+}
+
+.advanced-search-field-last input {
+    width: calc(100% - 2.1rem);
+}
+
+.scanner {
+    grid-area: scanner;
+}
+
+.scanner-box {
+    background-color: var(--claro2);
+    border-radius: 1rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.scanner-box p {
+    width: 60%;
+    font-size: large;
+    margin-bottom: 10px;
+}
+
+.scanner-box button {
+    font-size: large;
+    border: none;
+    display: flex;
+    align-items: center;
+}
+
+.scanner-box button img {
+    height: 1.5rem;
+    margin-left: 10px;
+}
+
+/* CSS para el escáner al abrir la cámara */
+
+.cam-container {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 3fr 1.1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "camera info";
+}
+
+/* .video-preview {
+    grid-area: camera;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+} */
+
+.scan-info {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.scan-info p {
+    width: 100%;
+    margin-bottom: 7px;
+    /* font-size: small; */
+    text-align: start;
+}
+
+.code-list {
+    width: 100%;
+    flex-grow: 1;
+    margin-bottom: 10px;
+    resize: none;
+    padding: 5px;
+    border: none;
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+}
+
+.code-list:focus {
+    outline: none;
+}
+
+.code-list-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.scan-option-btn {
+    margin: 0 !important;
+    padding: 2px;
+    justify-content: center;
+}
+
+.scan-option-btn:last-child {
+    margin-top: 10px !important;
+}
+
+.code-read-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    padding: 10px;
+    background-color: var(--amarillo1);
+    border: solid 2px var(--naranja2);
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 1rem;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+
+.code-read-message.hide {
+    opacity: 0;
+}
+
+.video-preview {
+    position: relative;
+    grid-area: camera;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+}
+
+.video-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.alert {
+    grid-area: alert;
+    height: fit-content;
+    box-shadow: 0px 0px 15px 0px rgb(25, 25, 26);
+    margin-top: 2rem;
+}

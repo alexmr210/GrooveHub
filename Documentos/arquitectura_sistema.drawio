@@ -1,0 +1,77 @@
+<mxfile host="Electron" modified="2024-07-11T15:49:15.353Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.5.3 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="m8020ptZelXYgwg_9y3D" version="24.5.3" type="device">
+  <diagram name="Página-1" id="gtW-3KsAk-ZhZF4R4xdX">
+    <mxGraphModel dx="724" dy="434" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-1" value="Usuario" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="208.2" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;exitX=0.497;exitY=0.036;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="5H7F90yuhW7qlwsEVHL8-2" target="5H7F90yuhW7qlwsEVHL8-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" source="5H7F90yuhW7qlwsEVHL8-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="350" y="239" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-2" value="Aplicación web" style="image;points=[];aspect=fixed;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/computer_and_terminals/Personal_Computer.svg;imageBackground=default;html=1;perimeterSpacing=4;" vertex="1" parent="1">
+          <mxGeometry x="208.65" y="208.2" width="45.6" height="61.800000000000004" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-6" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" source="5H7F90yuhW7qlwsEVHL8-3" target="5H7F90yuhW7qlwsEVHL8-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-3" value="Cámara" style="outlineConnect=0;dashed=0;verticalLabelPosition=top;verticalAlign=bottom;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.camera2;shadow=0;fillColor=#333333;strokeColor=none;fillStyle=auto;gradientColor=none;strokeWidth=25;perimeterSpacing=4;labelPosition=center;" vertex="1" parent="1">
+          <mxGeometry x="205" y="83.95" width="52.9" height="42.05" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-5" value="Código de barras" style="shape=image;verticalLabelPosition=top;labelBackgroundColor=default;verticalAlign=bottom;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EAN13.svg/1200px-EAN13.svg.png;labelPosition=center;align=center;perimeterSpacing=3;" vertex="1" parent="1">
+          <mxGeometry x="352" y="86.22" width="62" height="37.56" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-17" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="352" y="197.35999999999999" width="80" height="83.47000000000003" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-14" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/800px-Python-logo-notext.svg.png;" vertex="1" parent="5H7F90yuhW7qlwsEVHL8-17">
+          <mxGeometry x="26" width="43.3" height="47.47" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-15" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://static-00.iconduck.com/assets.00/programming-language-flask-icon-2048x1826-wf5k5ugs.png;" vertex="1" parent="5H7F90yuhW7qlwsEVHL8-17">
+          <mxGeometry x="6" y="21.80000000000001" width="40" height="35.67" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-16" value="API REST" style="text;align=center;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="5H7F90yuhW7qlwsEVHL8-17">
+          <mxGeometry y="57.47000000000003" width="80" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;startArrow=classic;startFill=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="239.10000000000002" as="targetPoint" />
+            <mxPoint x="210" y="239" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" source="5H7F90yuhW7qlwsEVHL8-19">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="240" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="240" />
+              <mxPoint x="520" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-19" value="PostreSQL" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#1A1A1A;shadow=0;dashed=0;shape=mxgraph.ios7.icons.data;perimeterSpacing=4;" vertex="1" parent="1">
+          <mxGeometry x="496" y="213.20000000000002" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-23" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" target="5H7F90yuhW7qlwsEVHL8-14">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="490" y="110" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-21" value="API Discogs" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://static-00.iconduck.com/assets.00/discogs-icon-512x512-c42b9zxj.png;perimeterSpacing=2;" vertex="1" parent="1">
+          <mxGeometry x="495" y="71.78" width="52" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="5H7F90yuhW7qlwsEVHL8-24" target="5H7F90yuhW7qlwsEVHL8-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5H7F90yuhW7qlwsEVHL8-24" value="BD Discogs" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#1A1A1A;shadow=0;dashed=0;shape=mxgraph.ios7.icons.data;perimeterSpacing=4;" vertex="1" parent="1">
+          <mxGeometry x="626" y="72.78000000000003" width="50" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
