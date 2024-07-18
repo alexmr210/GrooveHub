@@ -1,0 +1,19 @@
+{% extends session.get("layout") %}
+
+{% block title %}
+Buscar
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+
+<h1>Escáner de Códigos de Barras</h1>
+<button id="scanButton">Escanear</button>
+<div id="scanResult"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+{% endblock %}

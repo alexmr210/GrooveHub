@@ -1,0 +1,15 @@
+{% extends session.get("layout") %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block bodyContent %}
+
+<h1>VISTA DE ADMINISTRADOR</h1>
+
+{% endblock %}

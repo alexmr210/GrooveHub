@@ -1,73 +1,76 @@
-from flask import Flask, jsonify, redirect, render_template, url_for
-from flask_login import LoginManager, login_user, logout_user, login_required
+import logging
+from flask import redirect, render_template, url_for, session
+from flask_login import LoginManager, login_required, current_user
 from flask_wtf import CSRFProtect
-from flask_mail import Mail, Message
 from config import config as p
-from routes import auth_routes, error_routes, user_routes
+from pathlib import Path
+import config
+from routes import (
+    admin_routes,
+    auth_routes,
+    collection_routes,
+    error_routes,
+)
 from db import *
-from models import *
 
-app = Flask(__name__)
-app.config.from_object(p)
+# from models import *
+
+# Accedemos a la configuración global e inicializamos la gestión de usuarios
+config.init()
 login_manager_app = LoginManager()
 csrf = CSRFProtect()
-mail = Mail(app)
-
 
 @login_manager_app.user_loader
 def load_user(id):
-    return session.query(User).where(User.id == id).first()
+    return session.query(User).where(User.id_usuario == id).first()
 
 
-@app.route("/")
+@config.app.route("/")
 def index():
     return redirect(url_for("auth.login"))
 
 
-@app.route("/home")
-def home():
-    return render_template("home.html")
-
-
-# BORRAR v
-# Ejemplo de ruta protegida (Requiere iniciar sesión)
-@app.route("/protected")
+@config.app.route("/home")
 @login_required
-def protected():
-    return "Esta es una vista protegida, solo para usuarios autenticados."
+def home():
+    if current_user.admin:
+        return redirect(url_for("admin.home"))
+    else:
+        collectionData = get_six(current_user.id_usuario)
+        artists = get_artists_amount(current_user.id_usuario)
+        disks = get_disks_amount(current_user.id_usuario)
+        return render_template(
+            "home.html", collectionData=collectionData, artists=artists, disks=disks
+        )
 
 
-# Función de prueba para la conexión a BD
-@app.route("/users")
-def users():
-    users = session.query(User)
-    user_list = [{"username": user.username, "id": user.id} for user in users]
-    return jsonify({"users": user_list})
-
-
-@app.route("/hash/<password>")
-def hash_password(password):
-    hashed_value = generate_password_hash(password)
-    return hashed_value
-
-
-# BORRAR ^
+@config.app.route("/contact")
+def contact():
+    return render_template("contact.html")
 
 if __name__ == "__main__":
     # Configuration
-    app.config.from_object(p)
+    config.app.config.from_object(p)
 
     # Blueprints
-    app.register_blueprint(auth_routes.main, url_prefix="/auth")
-    app.register_blueprint(user_routes.main, url_prefix="/user")
-    # app.register_blueprint(error_routes.main, url_prefix='/error')
+    config.app.register_blueprint(auth_routes.main, url_prefix="/auth")
+    config.app.register_blueprint(admin_routes.main, url_prefix="/admin")
+    config.app.register_blueprint(collection_routes.main, url_prefix="/")
 
     # Error handling
-    app.register_error_handler(401, error_routes.status_401)
-    app.register_error_handler(404, error_routes.status_404)
+    config.app.register_error_handler(401, error_routes.status_401)
+    config.app.register_error_handler(403, error_routes.status_403)
+    config.app.register_error_handler(404, error_routes.status_404)
+    config.app.register_error_handler(429, error_routes.status_429)
 
     # Start
-    csrf.init_app(app)
-    login_manager_app.init_app(app)
-    app.run()
-    # app.run(host="0.0.0.0")
+    csrf.init_app(config.app)
+    login_manager_app.init_app(config.app)
+    # config.app.run()
+
+    config.app.run(host="0.0.0.0", port=5000)
+
+    # PROJECT_DIR = Path(__file__).parent
+    # cert_path = PROJECT_DIR / 'private/cert.pem'
+    # key_path = PROJECT_DIR / 'private/key.pem'
+    # config.app.run(host="0.0.0.0", port=5000, ssl_context=(cert_path, key_path))

@@ -1,0 +1,46 @@
+{% extends session.get("layout") %}
+
+{% block customJS %}
+<script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+{% endblock %}
+
+{% block title %}
+Mi colección
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/details.css') }}">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}"> -->
+{% endblock %}
+
+{% block bodyContent %}
+<div class="box">
+    <h1 class="title" title="Título">{{ collectionData['title'] }}</h1>
+    <div class="details-btns">
+        <a href="{{ url_for('collection.delete', idEdicion=collectionData['idEdicion']) }}"
+            class="link-btn details-btn delete-btn" title="Eliminar disco"
+            data-confirm="¿Estás seguro de que quieres eliminar {{collectionData['title']}} de tu colección?"></a>
+        <a href="{{ url_for('collection.modify', idEdicion=collectionData['idEdicion']) }}"
+            class="link-btn details-btn modify-btn" title="Solicitar una modificación"></a>
+        <a href="javascript:history.back()" class="link-btn details-btn back-btn" title="Volver"></a>
+    </div>
+    <h3 title="Artista" class="artist">{{ collectionData['artists'] }}</h3>
+    <img src="{{ collectionData['imageUrl'] }}">
+    <div class="details">
+        <p title="Año" class="info-year">{{ collectionData['year'] }}</p>
+        <p title="País" class="info-country">{{ collectionData['country'] }}</p>
+        <p title="Formato" class="info-format">{{ collectionData['format'] }}</p>
+    </div>
+    <table class="tracklist">
+        <tbody>
+            {% for item in collectionData['tracklist'] %}
+            <tr>
+                <td>{{ item['songTitle'] }}</td>
+                <td>{{ item['songDuration'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

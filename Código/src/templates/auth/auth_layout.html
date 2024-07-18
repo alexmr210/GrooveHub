@@ -2,9 +2,10 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" href="{{ url_for('static', filename='img/logo-color.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='img/logo/Logo_Condensed_White.svg') }}" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/root.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     <title>{% block title %}{% endblock %}</title>
@@ -17,21 +18,32 @@
 </head>
 
 <body>
-    <div class="body-container">
-        <div class="box">
-            <div class="logo">
-                <img src="{{ url_for('static', filename='img/logo-color.png') }}" alt="">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert" role="alert">
+        <p>{{ message }}</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="background">
+        <div class="body-container">
+            <div class="box">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='img/logo/Logo_Full_Black.svg') }}" alt="" width="250">
+                </div>
+                {% block body %}{% endblock %}
             </div>
-            {% block body %}{% endblock %}
         </div>
     </div>
     <footer>
         <div class="footer">
             <p>UAH - TFG Alejandro Martín</p>
-            <img src="{{ url_for('static', filename='img/logo-claro.png') }}" alt="">
+            <img src="{{ url_for('static', filename='img/logo/Logo_Condensed_White.svg') }}" alt="">
             <ul>
-                <li class="nav-item"><a href="#" class="nav-link">FAQ</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Contacto</a></li>
+                <li class="nav-item"><a href="{{ url_for('contact') }}" class="nav-link" target="_blank">Contacto</a></li>
             </ul>
         </div>
     </footer>

@@ -1,0 +1,17 @@
+{% extends session.get("layout") %}
+
+{% block title %}
+Eliminar
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+
+<h1>Disco eliminado</h1>
+<p>Se ha eliminado {{ title }} de tu colección.</p>
+<img src="{{ image }}" alt="Carátula de {{ title }}">
+
+{% endblock %}

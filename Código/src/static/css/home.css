@@ -1,0 +1,125 @@
+.body-container {
+    background-color: var(--claro2);
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 2.7fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "sidemenu alert"
+        "sidemenu content"
+}
+
+.alert {
+    grid-area: alert;
+}
+
+h1 {
+    margin: 1.5rem;
+    margin-bottom: 0;
+}
+
+.sidemenu {
+    grid-area: sidemenu;
+    background-color: var(--oscuro2);
+    padding: 2rem;
+    color: var(--claro1);
+    height: 100%;
+    min-width: 15rem;
+}
+
+.sidemenu h1 {
+    margin: 0;
+}
+
+.sidemenu hr {
+    border: none;
+    height: 1rem;
+}
+
+.sidemenu .link-btn {
+    margin-top: 10px;
+    box-shadow: 3px 3px 3px 0px rgb(17, 17, 17),
+        -2px -2px 3px 0px rgba(161, 157, 225, 0.5);
+}
+
+.sidemenu .link-btn:hover {
+    background-color: var(--naranja2);
+    /* font-weight: bold; */
+    box-shadow: inset 3px 3px 3px 0px rgba(113, 113, 115, 0.5);
+}
+
+a.text {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+a.text:hover {
+    color: var(--amarillo1);
+    transition-duration: 0.3s;
+}
+
+.sixrand {
+    display: grid;
+    grid-area: content;
+    grid-template-columns: repeat(4, 16.25rem);
+    grid-template-rows: repeat(2, 16.25rem);
+    gap: 1rem;
+    margin: 1rem;
+}
+
+.disk-box {
+    background-color: var(--claro1);
+    border-radius: 2rem;
+    padding: 2rem;
+    /* display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    /* grid-template-areas:
+        "img data"
+        /* "img year"
+        "img format" 
+        "title title"; 
+    align-content: center;
+    grid-gap: 7px; */
+}
+
+.disk-box .image {
+    /* grid-area: img; */
+    width: 100%;
+    height: 100%;
+    
+}
+
+.disk-box img {
+    width: 100%;
+    box-shadow: 0px 0px 6px 0px rgb(111, 111, 152);
+}
+
+.disk-box .title {
+    grid-area: title;
+    font-weight: bold
+}
+
+.disk-box .data {
+    grid-area: data;
+}
+
+.disk-box .artist {
+    font-weight: 500;
+    font-size: large;
+}
+
+.disk-box .year {
+    font-weight: 300;
+}
+
+div.add {
+    position: relative;
+}
+
+a.add {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    margin: 0;
+}

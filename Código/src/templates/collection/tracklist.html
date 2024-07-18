@@ -1,0 +1,48 @@
+{% extends session.get("layout") %}
+
+{% block customJS %}
+<script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+{% endblock %}
+
+{% block title %}
+Mi colección
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+<h1>{{ collectionData['disco'] }}</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Canción
+                <div class="sort-menu">
+                    <button class="sort-asc">Ordenar Ascendente</button>
+                    <button class="sort-desc">Ordenar Descendente</button>
+                    <input type="text" class="filter-input" placeholder="Filtrar">
+                    <button class="filter-btn">Filtrar</button>
+                </div>
+            </th>
+            <th>Duración
+                <div class="sort-menu">
+                    <button class="sort-asc">Ordenar Ascendente</button>
+                    <button class="sort-desc">Ordenar Descendente</button>
+                    <input type="text" class="filter-input" placeholder="Filtrar">
+                    <button class="filter-btn">Filtrar</button>
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in collectionData['tracklist'] %}
+        <tr>
+            <td>{{ item['songTitle'] }}</td>
+            <td>{{ item['songDuration'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

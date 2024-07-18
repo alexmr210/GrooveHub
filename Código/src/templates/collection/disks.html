@@ -1,0 +1,127 @@
+{% extends session.get("layout") %}
+
+{% block customJS %}
+<script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+<script src="{{ url_for('static', filename='js/disks.js') }}"></script>
+<script>
+    const collectionData = {{ collectionData | tojson }};
+    const disks = {{ disks }};
+    const artists = {{ artists }};
+    const favouriteFormat = "{{ favouriteFormat }}";
+    const urls = {
+        details: "{{ url_for('collection.details', idEdicion='') }}",
+        modify: "{{ url_for('collection.modify', idEdicion='') }}",
+        delete: "{{ url_for('collection.delete', idEdicion='') }}"
+    };
+    const text = "<p>¡Vaya colección!</p><p>Ya tienes <b>{{ disks }}</b> discos de <b>{{ artists }}</b> artistas distintos.</p><p>¡Y parece que tu formato favorito es el <b>{{ favouriteFormat }}</b>!</p>"
+    const pagesAmount = {{ pagesAmount }};
+</script>
+{% endblock %}
+
+{% block title %}
+Mi colección
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/disks.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+<div class="title-box">
+    <div class="title">
+        <h1>Mi colección</h1>
+        <div class="filtered">
+            {% if search and filterBy and filterBy!='None'%}
+            Filtrando por {{ filterBy }} "{{ search }}"
+            {% endif %}
+        </div>
+        <div class="btns">
+            <div class="pagination">
+                <form id="filter-hidden-prev" action="/disks?page={{ page-1 }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="filter-by" value="{{ filterBy }}">
+                    <input type="hidden" name="search" value="{{ search }}">
+                </form>
+                <form id="filter-hidden-next" action="/disks?page={{ page+1 }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="filter-by" value="{{ filterBy }}">
+                    <input type="hidden" name="search" value="{{ search }}">
+                </form>
+                {% if 1 == page %}
+                <p class="deactivated">◀</p>
+                {% else %}
+                <a href="#" onclick="document.getElementById('filter-hidden-prev').submit();">◀</a>
+                {% endif %}
+                <p>{{ page }}</p>
+                {% if pagesAmount == page %}
+                <p class="deactivated">▶</p>
+                {% else %}
+                <a href="#" onclick="document.getElementById('filter-hidden-next').submit();">▶</a>
+                {% endif %}
+            </div>
+            <a href="" class="link-btn filter-btn" title="Filtrar" id="filter-btn"></a>
+            <a href="{{ url_for('collection.insert') }}" class="link-btn add-btn" title="Añadir un nuevo disco"></a>
+        </div>
+    </div>
+    <div class="filter-box" id="filter-box">
+        <p>Filtrar por:</p>
+        <form action="/disks" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="custom-select-wrapper">
+                <div class="custom-select">
+                    <div class="custom-select-trigger">
+                        <span></span>
+                    </div>
+                    <div class="custom-options">
+                        <span class="custom-option selected" data-value="titulo">Título</span>
+                        <span class="custom-option" data-value="artista">Artista</span>
+                        <span class="custom-option" data-value="edicion">Formato</span>
+                        <span class="custom-option" data-value="agno">Año</span>
+                        <span class="custom-option" data-value="pais">País</span>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="filter-by" value="titulo" id="filter-by">
+            <input class="search-bar" type="text" name="search" id="search">
+            <button type="submit" class="search-btn" id="manual-search"></button>
+        </form>
+    </div>
+</div>
+<div class="box">
+    <div class="table-box">
+        <table class="coll-tbl">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Artista</th>
+                    <th>Formato</th>
+                    <th>Año</th>
+                    <th>País</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in collectionData %}
+                <tr>
+                    <td>{{ item['title'] }}</td>
+                    <td>{{ item['artists'] }}</td>
+                    <td>{{ item['format'] }}</td>
+                    <td>{{ item['year'] }}</td>
+                    <td>{{ item['country'] }}</td>
+                    <td>
+                        <a href="" class="link-btn info-btn" title="Filtrar" id="filter-btn"></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="side-msg" class="message">
+    <p>¡Vaya colección!</p>
+    <p>Ya tienes <b>{{ disks }}</b> discos de <b>{{ artists }}</b> artistas distintos.</p>
+    <p>¡Y parece que tu formato favorito es el <b>{{ favouriteFormat }}</b>!</p>
+</div>
+
+<!-- <div class="empty"></div> -->
+{% endblock %}

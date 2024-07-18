@@ -1,0 +1,46 @@
+{% extends session.get("layout") %}
+
+{% block title %}
+Nuevo disco
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/select.css') }}">
+{% endblock %}
+
+{% block bodyContent %}
+<div class="select-tile">
+    <h1>Resultados para '{{ code }}'</h1>
+    <a href="{{ url_for('collection.selected') }}" class="link-btn">No insertar</a>
+</div>
+<div class="options">
+    {% for option in options %}
+    <form action="/selected" method="GET" class="option">
+        <img src="{{ option.imageUrl }}" alt="Carátula de {{ option.title }}">
+        <h3>{{ option.title }}</h3>
+        <p class="artist">{{ option.artists }}</p>
+        <p class="format">{{ option.format }}</p>
+        <p class="year">{{ option.year }}</p>
+        <p class="country">{{ option.country }}</p>
+        <input type="hidden" name="optionSelected" value="{{ loop.index }}">
+        <div class="btn-group">
+            <div class="songlist link-btn">
+                <div class="hover-text">
+                    <div class="song-titles">
+                        {% for song in option.tracklist %}
+                        <p>{{ song.songTitle }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="song-durations">
+                        {% for song in option.tracklist %}
+                        <p>{{ song.songDuration }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="add-btn link-btn" title="Añadir a mi colección"></button>
+        </div>
+    </form>
+    {% endfor %}
+</div>
+{% endblock %}

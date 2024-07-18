@@ -2,36 +2,58 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" href="{{ url_for('static', filename='img/logo-color.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='img/logo/Logo_Condensed_White.svg') }}" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
+    <title>GrooveHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/root.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
     {% block customCSS %}{% endblock %}
     {% block customJS %}{% endblock %}
+    <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
     <header>
         <div class="navbar">
             <nav>
-                <!-- <div class="logo">
-                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="">
-                </div> -->
-                <ul class="nav-links">
+                <ul class="nav-left">
                     <li>
                         <a class="nav-logo" href="{{ url_for('home') }}">
-                            <img src="{{ url_for('static', filename='img/logo-claro.png') }}" alt="">
+                            <img src="{{ url_for('static', filename='img/logo/Logo_Full_White.svg') }}" alt="">
                         </a>
                     </li>
-                    <li><a href="{{ url_for('home') }}">Inicio</a></li>
+
                 </ul>
-                <div class="nav-user">
+                <div class="nav-center">
+                    <div class="nav-search">
+                        <form action="/insert" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="text" name="search" id="search">
+                            <button type="submit" class="nav-search-btn" id="navbar-search"></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="nav-right">
                     <ul>
                         <li>
-                            <a href="#">{{ current_user.name }} ▼</a>
+                            <a class="nav-icon" href="{{ url_for('collection.disks') }}">
+                                <img src="{{ url_for('static', filename='img/collection.svg') }}" title="Mi colección">
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-icon" href="{{ url_for('collection.insert') }}">
+                                <img src="{{ url_for('static', filename='img/new_disk.svg') }}" title="Nuevo disco">
+                            </a>
+                        </li>
+                        <li>
+                            <p>{{ current_user.nombre }} ▼</p>
                             <ul class="dropdown">
-                                <li><a href="{{ url_for('user.profile') }}">Perfil</a></li>
+                                <li><a href="{{ url_for('collection.disks') }}">Mi colección</a></li>
+                                <li><a href="{{ url_for('collection.insert') }}">Nuevo disco</a></li>
                                 <li><a href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
                             </ul>
                         </li>
@@ -41,15 +63,25 @@
         </div>
     </header>
     <div class="body-container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert" role="alert">
+            <p>{{ message }}</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% block bodyContent %}{% endblock %}
         {% block body %}{% endblock %}
     </div>
     <footer>
         <div class="footer">
-            <p>UAH - TFG  Alejandro Martín</p>
-            <img src="{{ url_for('static', filename='img/logo-claro.png') }}" alt="">
+            <p>UAH - TFG Alejandro Martín</p>
+            <img src="{{ url_for('static', filename='img/logo/Logo_Condensed_White.svg') }}" alt="">
             <ul>
-                <li class="nav-item"><a href="#" class="nav-link">FAQ</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Contacto</a></li>
+                <li class="nav-item"><a href="{{ url_for('contact') }}" class="nav-link" target="_blank">Contacto</a></li>
             </ul>
         </div>
     </footer>

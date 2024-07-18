@@ -1,0 +1,225 @@
+.body-container {
+    background-color: var(--oscuro2);
+    padding: 0;
+}
+
+.box {
+    margin: 1.35rem;
+    height: calc(100% - 5.4rem);
+    width: calc(100% - 5.4rem);
+    border-radius: 1.35rem;
+    display: grid;
+    grid-template-columns: 15rem calc(30rem + 20px) 1fr;
+    grid-template-rows: 3rem 2.8rem 9.2rem auto;
+    grid-template-areas:
+        "img title btns"
+        "img artist artist"
+        "img songs obs"
+        "details songs obs";
+    background-color: var(--claro1);
+    padding: 1.35rem;
+    column-gap: 1rem;
+}
+
+.modify-form input {
+    border-radius: 5rem;
+    border: none;
+    box-shadow: inset 4px 3px 4px 0px rgb(113, 113, 115);
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 1.7rem;
+    width: 30rem;
+    align-items: center;
+}
+
+.modify-form input:focus {
+    outline: none;
+}
+
+.box img {
+    grid-area: img;
+    width: 15rem;
+    height: 15rem;
+}
+
+.box .title {
+    grid-area: title;
+    font-size: 130%;
+    font-weight: bold;
+    height: 2.4rem;
+}
+
+.box .details-btns {
+    grid-area: btns;
+    display: flex;
+    justify-content: right;
+    gap: 0.4rem;
+}
+
+.box .artist {
+    grid-area: artist;
+    font-size: 110%;
+    font-weight: bold;
+    height: 2.2rem;
+}
+
+.box .details {
+    grid-area: details;
+    margin-top: 1.35rem;
+}
+
+.details input {
+    width: 70%;
+    margin-bottom: 10px;
+}
+
+input.song-input {
+    width: calc(26.6rem - 20px);
+}
+
+input.song-input.admin {
+    width: calc(23.6rem - 20px);
+}
+
+input.duration-input {
+    width: 3rem;
+    text-align: center;
+}
+
+.box .tracklist {
+    grid-area: songs;
+}
+
+.details-btn {
+    display: inline-block;
+    padding: 0.8rem;
+    text-decoration: none;
+    color: var(--oscuro2);
+    font-weight: 500;
+    text-align: center;
+    margin: 0.4rem 0rem;
+    border-radius: 10em;
+    transition-duration: 0.3s;
+    width: 1.7rem;
+    height: 1.7rem;
+    border: none;
+}
+
+.details-btn:hover {
+    transform: scale(1.04);
+}
+
+.search-btn {
+    display: inline-block;
+    padding: 0.8rem;
+    text-decoration: none;
+    color: var(--oscuro2);
+    font-weight: 500;
+    text-align: center;
+    margin: 0.4rem 0rem;
+    border-radius: 10em;
+    transition-duration: 0.3s;
+    width: 1.7rem;
+    height: 1.7rem;
+    background: var(--amarillo1) url(../img/magnifying-glass.svg) center/1.3em auto no-repeat;
+    border: none;
+}
+
+.search-btn:hover {
+    background: var(--naranja2) url(../img/magnifying-glass.svg) center/1.31em auto no-repeat;
+    font-weight: bold;
+    transform: scale(1.04);
+}
+
+.send-btn {
+    background: var(--amarillo1) url(../img/send.svg) center/1.5em auto no-repeat;
+}
+
+.back-btn {
+    background: var(--amarillo1) url(../img/back.svg) center/1.5em auto no-repeat;
+}
+
+table.tracklist-modify {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+    /* height: fit-content; */
+    gap: 30px;
+}
+
+table.tracklist-modify td,
+table.tracklist-modify th {
+    border: 0.4rem solid transparent;
+    border-left: none;
+    border-right: 0.4rem solid transparent;
+    width: 100%;
+    height: 2rem;
+}
+
+.observations {
+    grid-area: obs;
+    width: 20rem;
+}
+
+.observations input {
+    width: 100%;
+    height: 20rem;
+    border-radius: 1.3rem;
+    text-align: start;
+    text-wrap: wrap;
+}
+
+textarea {
+    width: 100%;
+    height: 20rem;
+    border-radius: 1.3rem;
+    padding: 10px;
+    resize: none;
+}
+
+div.delete-song {
+    width: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+div.delete-song .checkbox {
+    width: 1rem;
+    height: 1rem;
+}
+
+div.delete-song .delete-icon {
+    width: 1.7rem;
+    height: 1.7rem;
+    background: transparent url(../img/trash.svg) center/1.3em auto no-repeat;
+}
+
+.delete-btn {
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    border: none;
+    background: var(--amarillo1) url(../img/trash.svg) center/1.3rem auto no-repeat;
+}
+
+.delete-btn:hover {
+    background: var(--naranja2) url(../img/trash.svg) center/1.3rem auto no-repeat;
+}
+
+.new-songs {
+    grid-area: obs;
+    width: calc(30rem + 20px);
+}
+
+.new-songs input {
+    /* width: 100%; */
+    border-radius: 1.3rem;
+    text-align: start;
+    text-wrap: wrap;
+}
+
+.new-songs td {
+    width: fit-content !important;
+    vertical-align: middle;
+}

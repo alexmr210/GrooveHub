@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 from db import db_login, db_signup, find_email, find_username, change_password
 from flask_login import login_user, logout_user
 from utils import send_reset_email
@@ -21,6 +21,7 @@ def login():
         if loggedUser != None:
             if loggedUser.correctPassword:
                 login_user(loggedUser)
+                session["layout"] = "./layout.html"
                 return redirect(url_for("home"))
             else:
                 flash("Contraseña incorrecta")
@@ -77,8 +78,8 @@ def reset_verified(token):
         return redirect(url_for("auth.login"))
     return render_template("auth/reset_verified.html")
 
-
 @main.route("/logout")
 def logout():
     logout_user()
+    session.pop("admin", None)
     return redirect(url_for("auth.login"))

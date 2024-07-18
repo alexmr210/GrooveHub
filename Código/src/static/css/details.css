@@ -1,0 +1,94 @@
+.body-container {
+    background-color: var(--oscuro2);
+    padding: 0;
+}
+
+.box {
+    margin: 1.35rem;
+    height: calc(100% - 5.4rem);
+    width: calc(100% - 5.4rem);
+    border-radius: 1.35rem;
+    display: grid;
+    grid-template-columns: 15rem 1fr auto;
+    grid-template-rows: 3rem 2rem 10rem auto;
+    grid-template-areas:
+        "img title btns"
+        "img artist btns"
+        "img songs btns"
+        "details songs btns";
+    background-color: var(--claro1);
+    padding: 1.35rem;
+    column-gap: 1rem;
+}
+
+.box img {
+    grid-area: img;
+    width: 15rem;
+    height: 15rem;
+}
+
+.box .title {
+    grid-area: title;
+}
+
+.box .details-btns {
+    grid-area: btns;
+}
+
+.box .artist {
+    grid-area: artist;
+}
+
+.box .details {
+    grid-area: details;
+    margin-top: 1.35rem;
+}
+
+.box .tracklist {
+    grid-area: songs;
+}
+
+table.tracklist th {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+table.tracklist {
+    width: 70%;
+    height: fit-content;
+}
+
+table.tracklist td {
+    height: fit-content;
+}
+
+.details-btn {
+    display: inline-block;
+    padding: 0.8rem;
+    text-decoration: none;
+    color: var(--oscuro2);
+    font-weight: 500;
+    text-align: center;
+    margin: 0.4rem 0rem;
+    border-radius: 10em;
+    transition-duration: 0.3s;
+    width: 1.7rem;
+    height: 1.7rem;
+    border: none;
+}
+
+.details-btn:hover {
+    transform: scale(1.04);
+}
+
+.delete-btn {
+    background: var(--amarillo1) url(../img/trash.svg) center/1.5em auto no-repeat;
+}
+
+.modify-btn {
+    background: var(--amarillo1) url(../img/pencil.svg) center/1.5em auto no-repeat;
+}
+
+.back-btn {
+    background: var(--amarillo1) url(../img/back.svg) center/1.5em auto no-repeat;
+}
