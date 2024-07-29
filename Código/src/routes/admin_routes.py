@@ -29,6 +29,8 @@ from db import (
     get_disk,
     db_modify_disk,
     get_users_amount,
+    get_users_amount_all,
+    get_users_amount_filter,
     get_users_page,
     get_users_page_filter,
 )
@@ -52,19 +54,26 @@ def home():
 def view_users():
     check_admin()
     page = max(1, request.args.get("page", type=int, default=1))
+    usersAmount = get_users_amount_all()
     if request.method == "POST":
         search = request.form["search"]
         filterBy = request.form["filter-by"]
-        if filterBy != "None":
-            collectionData = get_users_page_filter(
-                current_user.id_usuario, page, filterBy, search
-            )
+        if search != "" and filterBy != "None":
+            collectionData = get_users_page_filter(page, filterBy, search)
+            usersShown = get_users_amount_filter(filterBy, search)
         else:
-            collectionData = get_users_page(current_user.id_usuario, page)
+            collectionData = get_users_page(page)
+            usersShown = usersAmount
     else:
         collectionData = get_users_page(page)
+        usersShown = usersAmount
         filterBy, search = None, None
-    return render_template("admin/users.html", userData=collectionData, page=page)
+    pagesAmount = (usersShown + 9) // 10
+    if pagesAmount <= 0:
+        pagesAmount = 1
+    return render_template(
+        "admin/users.html", userData=collectionData, page=page, pagesAmount=pagesAmount
+    )
 
 
 @main.route("/modify-user/<idUsuario>", methods=["GET", "POST"])
@@ -80,8 +89,7 @@ def modify_user(idUsuario):
             "role": request.form["role"],
         }
         db_modify_user(user)
-        print(user)
-        flash("En desarrollo")
+        flash("Se han modificado los datos del usuario " + user["username"] + ".")
         return redirect(url_for("admin.view_users"))
     else:
         userData = find_userid(idUsuario)
@@ -108,25 +116,26 @@ def delete_user(idUsuario):
 def view_disks():
     check_admin()
     page = max(1, request.args.get("page", type=int, default=1))
+    disksAmount = get_disks_amount_all()
     if request.method == "POST":
         search = request.form["search"]
         filterBy = request.form["filter-by"]
-        if filterBy != "None":
-            collectionData = get_all_disks_page_filter(
-                page, filterBy, search
-            )
-            disksAmount = get_disks_amount_all_filter(filterBy, search)
+        if search != "" and filterBy != "None":
+            collectionData = get_all_disks_page_filter(page, filterBy, search)
+            disksShown = get_disks_amount_all_filter(filterBy, search)
         else:
-            collectionData = get_all_disks_page(current_user.id_usuario, page)
-            disksAmount = get_disks_amount_all(current_user.id_usuario)
+            collectionData = get_all_disks_page(page)
+            disksShown = disksAmount
     else:
         collectionData = get_all_disks_page(page)
+        disksShown = disksAmount
         filterBy, search = None, None
     artistsAmount = get_artists_amount_all()
-    disksAmount = get_disks_amount_all()
-    pagesAmount = (disksAmount + 9) // 10
+    pagesAmount = (disksShown + 9) // 10
     favouriteFormat = get_favourite_format_all()
     usersAmount = get_users_amount()
+    if pagesAmount <= 0:
+        pagesAmount = 1
     return render_template(
         "admin/disks_admin.html",
         collectionData=collectionData,
@@ -233,4 +242,3 @@ def check_admin():
         abort(403)
     else:
         session["layout"] = "./admin/layout_admin.html"
-        print("ADMIN")

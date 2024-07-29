@@ -3,6 +3,9 @@
 {% block customJS %}
 <script src="{{ url_for('static', filename='js/collection.js') }}"></script>
 <script src="{{ url_for('static', filename='js/disks.js') }}"></script>
+<script>
+    const pagesAmount = {{ pagesAmount }};
+</script>
 {% endblock %}
 
 {% block title %}
@@ -19,22 +22,32 @@ Mi colección
     <div class="title">
         <h1>Usuarios</h1>
         <div class="filtered">
-            {% if search and filterBy %}
+            {% if search and filterBy and filterBy!='None'%}
             Filtrando por {{ filterBy }} "{{ search }}"
             {% endif %}
         </div>
         <div class="btns">
             <div class="pagination">
+                <form id="filter-hidden-prev" action="/admin/users?page={{ page-1 }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="filter-by" value="{{ filterBy }}">
+                    <input type="hidden" name="search" value="{{ search }}">
+                </form>
+                <form id="filter-hidden-next" action="/admin/users?page={{ page+1 }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="filter-by" value="{{ filterBy }}">
+                    <input type="hidden" name="search" value="{{ search }}">
+                </form>
                 {% if 1 == page %}
                 <p class="deactivated">◀</p>
                 {% else %}
-                <a href="{{ url_for('admin.view_users', page=page-1) }}">◀</a>
+                <a href="#" onclick="document.getElementById('filter-hidden-prev').submit();">◀</a>
                 {% endif %}
                 <p>{{ page }}</p>
                 {% if pagesAmount == page %}
                 <p class="deactivated">▶</p>
                 {% else %}
-                <a href="{{ url_for('admin.view_users', page=page+1) }}">▶</a>
+                <a href="#" onclick="document.getElementById('filter-hidden-next').submit();">▶</a>
                 {% endif %}
             </div>
             <a href="" class="link-btn filter-btn" title="Filtrar" id="filter-btn"></a>
@@ -83,10 +96,10 @@ Mi colección
                     <td>{{ item['email'] }}</td>
                     <td>{{ item['role'] }}</td>
                     <td>
-                        <a href="{{ url_for('admin.modify_user', idUsuario=item['idUsuario']) }}" class="link-btn modify-btn user-tbl-btn"
-                            title="Solicitar un cambio para este disco"></a>
-                        <a href="{{ url_for('admin.delete_user', idUsuario=item['idUsuario']) }}" class="link-btn delete-btn user-tbl-btn"
-                            title="Eliminar"
+                        <a href="{{ url_for('admin.modify_user', idUsuario=item['idUsuario']) }}"
+                            class="link-btn modify-btn user-tbl-btn" title="Solicitar un cambio para este disco"></a>
+                        <a href="{{ url_for('admin.delete_user', idUsuario=item['idUsuario']) }}"
+                            class="link-btn delete-btn user-tbl-btn" title="Eliminar"
                             data-confirm="¿Estás seguro de que quieres eliminar el usuario {{item['name']}}?"></a>
                     </td>
                 </tr>

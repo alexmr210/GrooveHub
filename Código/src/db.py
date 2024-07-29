@@ -1,9 +1,10 @@
-from flask import flash
+from flask import flash, redirect, url_for
 from config import config as p
 from sqlalchemy import create_engine, text
 from data import generarHashCanciones
 from models import *
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Creamos el motor sobre el que se conectará
@@ -11,6 +12,12 @@ database_url = f"postgresql://{p.DB_USER}:{p.DB_PASS}@{p.DB_HOST}:{p.DB_PORT}/{p
 engine = create_engine(database_url)
 connection = engine.connect()
 Base.metadata.create_all(engine)
+
+# @p.app.errorhandler(SQLAlchemyError)
+# def handle_db_error(error):
+#     connection.rollback()
+#     flash('Ha habido un error inesperado. Por favor, intntalo de nuevo más tarde.')
+#     return redirect(url_for('home'))
 
 # Creamos la sesión a través de la cual haremos las consultas
 Session = sessionmaker(bind=engine)
@@ -22,7 +29,7 @@ def db_login(inUsername, inPassword):
         dbUser = find_username(inUsername)
         if dbUser:
             dbUser.correctPassword = check_password_hash(dbUser.contrasena, inPassword)
-            dbUser.admin = dbUser.role == "ADMIN"
+            dbUser.admin = (dbUser.role == "ADMIN")
             return dbUser
         else:
             return None
@@ -589,6 +596,12 @@ def get_users_amount():
     amount = result.fetchone()[0]
     return amount
 
+def get_users_amount_all():
+    query = f"""SELECT COUNT(*) FROM usuarios"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
+
 def get_users():
     query = f"""SELECT * FROM usuarios"""
     result = connection.execute(text(query))
@@ -622,6 +635,13 @@ def get_users_page_filter(page, filterBy, search):
         }
         collection.append(item)
     return collection
+
+def get_users_amount_filter(filterBy, search):
+    search = remove_accents(search)
+    query = f"""SELECT COUNT(*) FROM usuarios WHERE UPPER ({filterBy}) LIKE UPPER('%{search}%')"""
+    result = connection.execute(text(query))
+    amount = result.fetchone()[0]
+    return amount
 
 def get_users_page(page):
     min = (page-1) * 10

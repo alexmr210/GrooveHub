@@ -1,46 +1,50 @@
 {% extends session.get("layout") %}
 
+{% block customJS %}
+<script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+<script src="{{ url_for('static', filename='js/users.js') }}"></script>
+{% endblock %}
+
 {% block title %}
-Nuevo disco
+Mi colección
 {% endblock %}
 
 {% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}">
-{% endblock %}
-
-{% block customJS %}
-<script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modify_register.css') }}">
 {% endblock %}
 
 {% block bodyContent %}
+<form action="/admin/modify-user/{{ user.id }}" method="POST" id="modify-form" class="modify-form admin">
+    <div class="box box-admin">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-<h1>Modificar usuario</h1>
-<h4>Datos actuales</h2>
-<h6>Nombre de usuario:</h6>
-<p>{{ user.username }}</p>
-<h6>Nombre:</h6>
-<p>{{ user.name }}</p>
-<h6>Correo electrónico:</h6>
-<p>{{ user.email }}</p>
-<h6>Rol:</h6>
-<p>{{ user.role }}</p>
+        <div class="details-btns">
+            <a onclick="document.getElementById('modify-form').submit()" href="#" class="link-btn details-btn send-btn"
+                title="Enviar"></a>
+            <a href="javascript:history.back()" class="link-btn details-btn back-btn" title="Volver"></a>
+        </div>
 
-<h4>Modificaciones:</h4>
-<form action="/admin/modify-user/{{ user.id }}" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="form">
-        <p>Nombre de usuario</p>
-        <input type="text" name="username" value="{{ user.username }}">
-        <p>Nombre</p>
-        <input type="text" name="name" value="{{ user.name }}">
-        <p>Correo electrónico</p>
-        <input type="email" name="email" value="{{ user.email }}">
-        <p>Rol</p>
-        <select list="role-types" name="role" value="{{ user.role }}">
-            <option value="USER">USER</option>
-            <option value="ADMIN">ADMIN</option>
-        </select>
-        <button type="submit" class="btn-submit">Modificar</button>
+        <p class="admin user-title">Nombre de usuario</p>
+        <input class="admin username" type="text" name="username" value="{{ user.username }}">
+        <p class="admin name-title">Nombre</p>
+        <input class="admin name" type="text" name="name" value="{{ user.name }}">
+        <p class="admin mail-title">Correo electrónico</p>
+        <input class="admin email" type="email" name="email" value="{{ user.email }}">
+        <div class="role-title">
+            <p>Rol</p>
+        </div>
+        <div class="custom-select-wrapper role">
+            <div class="custom-select">
+                <div class="custom-select-trigger">
+                    <span></span>
+                </div>
+                <div class="custom-options">
+                    <span class="custom-option selected" data-value="USER">USER</span>
+                    <span class="custom-option" data-value="ADMIN">ADMIN</span>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="role" value="{{ user.role }}" id="role-selected">
     </div>
 </form>
 

@@ -28,16 +28,17 @@ def auth():
 @main.route("/disks", methods=["GET", "POST"])
 @login_required
 def disks():
-    print(request.args.get("page"))
     page = max(1, request.args.get("page", type=int, default=1))
     if request.method == "POST":
         search = request.form["search"]
         filterBy = request.form["filter-by"]
-        if filterBy != 'None':
+        if filterBy != "None":
             collectionData = get_collection_page_filter(
                 current_user.id_usuario, page, filterBy, search
             )
-            disksAmount = get_disks_amount_filter(current_user.id_usuario, filterBy, search)
+            disksAmount = get_disks_amount_filter(
+                current_user.id_usuario, filterBy, search
+            )
         else:
             collectionData = get_collection_page(current_user.id_usuario, page)
             disksAmount = get_disks_amount(current_user.id_usuario)

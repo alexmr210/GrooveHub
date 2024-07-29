@@ -21,7 +21,7 @@ Mi colección
             class="link-btn details-btn delete-btn" title="Eliminar disco"
             data-confirm="¿Estás seguro de que quieres eliminar {{collectionData['title']}} de tu colección?"></a>
         <a href="{{ url_for('admin.modify_disk', idEdicion=collectionData['idEdicion']) }}"
-            class="link-btn details-btn modify-btn" title="Solicitar una modificación"></a>
+            class="link-btn details-btn modify-btn" title="Modificar"></a>
         <a href="javascript:history.back()" class="link-btn details-btn back-btn" title="Volver"></a>
     </div>
     <h3 title="Artista" class="artist">{{ collectionData['artists'] }}</h3>

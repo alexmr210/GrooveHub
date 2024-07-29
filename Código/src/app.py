@@ -20,10 +20,16 @@ config.init()
 login_manager_app = LoginManager()
 csrf = CSRFProtect()
 
+
 @login_manager_app.user_loader
 def load_user(id):
     return session.query(User).where(User.id_usuario == id).first()
 
+@config.app.errorhandler(SQLAlchemyError)
+def handle_db_error(error):
+    connection.rollback()
+    flash("Ha habido un error inesperado. Por favor, intntalo de nuevo más tarde.")
+    return redirect(url_for("home"))
 
 @config.app.route("/")
 def index():
@@ -47,6 +53,7 @@ def home():
 @config.app.route("/contact")
 def contact():
     return render_template("contact.html")
+
 
 if __name__ == "__main__":
     # Configuration

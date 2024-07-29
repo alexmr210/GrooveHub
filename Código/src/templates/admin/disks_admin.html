@@ -14,6 +14,7 @@
         delete: "{{ url_for('admin.delete_disk', idEdicion='') }}"
     };
     const text = "<p>¡Groovehub ya cuenta con <b>{{ users }}</b> usuarios!</p><p>Entre todos ya han registrado <b>{{ disks }}</b> discos de <b>{{ artists }}</b> artistas distintos.</p><p>¡Y parece que el formato por excelencia es el <b>{{ favouriteFormat }}</b>!</p>"
+    const pagesAmount = {{ pagesAmount }};
 </script>
 {% endblock %}
 
@@ -30,22 +31,32 @@ Mi colección
     <div class="title">
         <h1>Discos</h1>
         <div class="filtered">
-            {% if search and filterBy %}
+            {% if search and filterBy and filterBy!='None'%}
             Filtrando por {{ filterBy }} "{{ search }}"
             {% endif %}
         </div>
         <div class="btns">
             <div class="pagination">
+                <form id="filter-hidden-prev" action="/admin/disks?page={{ page-1 }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="filter-by" value="{{ filterBy }}">
+                    <input type="hidden" name="search" value="{{ search }}">
+                </form>
+                <form id="filter-hidden-next" action="/admin/disks?page={{ page+1 }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="filter-by" value="{{ filterBy }}">
+                    <input type="hidden" name="search" value="{{ search }}">
+                </form>
                 {% if 1 == page %}
                 <p class="deactivated">◀</p>
                 {% else %}
-                <a href="{{ url_for('admin.view_disks', page=page-1) }}">◀</a>
+                <a href="#" onclick="document.getElementById('filter-hidden-prev').submit();">◀</a>
                 {% endif %}
                 <p>{{ page }}</p>
                 {% if pagesAmount == page %}
                 <p class="deactivated">▶</p>
                 {% else %}
-                <a href="{{ url_for('admin.view_disks', page=page+1) }}">▶</a>
+                <a href="#" onclick="document.getElementById('filter-hidden-next').submit();">▶</a>
                 {% endif %}
             </div>
             <a href="" class="link-btn filter-btn" title="Filtrar" id="filter-btn"></a>
