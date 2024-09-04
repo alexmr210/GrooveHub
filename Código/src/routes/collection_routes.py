@@ -77,7 +77,7 @@ def insert():
     if request.method == "POST":
         scanned = False
         advanced = False
-        if "search" in request.form:
+        if "search" in request.form:  # Búsqueda simple
             search = request.form["search"]
         elif (
             "title" in request.form
@@ -86,7 +86,7 @@ def insert():
             or "format" in request.form
             or "country" in request.form
             or "barcode" in request.form
-        ):
+        ):  # Búsqueda avanzada
             advanced = True
             title = request.form["title"]
             artist = request.form["artist"]
@@ -95,7 +95,7 @@ def insert():
             country = request.form["country"]
             barcode = request.form["barcode"]
             search = [title, artist, year, format, country, barcode]
-        elif "search" in request.json:
+        elif "search" in request.json:  # Búsqueda por escáner
             scanned = True
             search = request.json["search"]
         else:
@@ -118,9 +118,10 @@ def insert():
                     )
                     return render_template("collection/insert.html")
             elif scanned:
-                options = searchDiscogsList(search)
-                auxSearch = search
+                # options = searchDiscogsList(search)
                 session["firstSelectOption"] = True
+                session["codesList"] = search
+                return redirect(url_for("collection.selectMultiple"))
             if options:
                 session["optionsList"] = options
                 session["codesList"] = auxSearch
@@ -157,6 +158,44 @@ def select():
             code = codesList.pop(0)
             session["codesList"] = codesList
             session["lastSearch"] = len(optionsList) == 0
+            session["origin"] = "collection.select"
+            if options:
+                session["options"] = options
+                session["code"] = code
+                options = json.loads(options)
+                return render_template(
+                    "collection/insert_select.html", options=options, code=code
+                )
+            else:
+                flash("No se han encontrado resultados.")
+                return render_template(
+                    "collection/insert_select.html", options=options, code=code
+                )
+        except IndexError:
+            flash("¡Vaya! Algo no ha ido como debería.")
+            return redirect(url_for("collection.insert"))
+
+@main.route("/select-scanner")
+@login_required
+def selectMultiple():
+    if "pendingMessage" in session:
+        flash(session["pendingMessage"])
+        del session["pendingMessage"]
+    if session.get("firstSelectOption"):
+        session["firstSelectOption"] = False
+        return render_template("collection/insert_select.html", options=[], code="0")
+    else:
+        try:
+            session["firstSelectOption"] = False
+            # optionsList = session.get("optionsList")  # Objeto list
+            # options = optionsList.pop(0)
+            # session["optionsList"] = optionsList
+            codesList = session.get("codesList")
+            code = codesList.pop(0)
+            session["codesList"] = codesList
+            session["lastSearch"] = len(codesList) == 0
+            options = searchDiscogs(code)
+            session["origin"] = "collection.selectMultiple"
             if options:
                 session["options"] = options
                 session["code"] = code
@@ -220,7 +259,7 @@ def selected():
     if session.get("lastSearch"):
         return redirect(url_for("collection.disks"))
     else:
-        return redirect(url_for("collection.select"))
+        return redirect(url_for(session.get("origin")))
 
 
 @main.route("/modify/<idEdicion>", methods=["GET", "POST"])

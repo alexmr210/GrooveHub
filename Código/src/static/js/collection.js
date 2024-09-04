@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-
+// Pantalla de carga
 document.addEventListener("DOMContentLoaded", function () {
     const buttons = ["manual-search", "advanced-search", "scan-search"];
     buttons.forEach(function (buttonId) {
