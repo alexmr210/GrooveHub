@@ -19,7 +19,7 @@ class Config:
     MAIL_PORT = 465
     MAIL_USE_SSL = True
     MAIL_USERNAME = "dummyempresa16@gmail.com"
-    MAIL_PASSWORD = "fxiinnlvizvhrynq"
+    MAIL_PASSWORD = "wffthsctymdqjzfk"
     MAIL_TECH = "groovehubtechnicalservice@gmail.com"
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=45)
 

@@ -18,7 +18,7 @@ def send_reset_email(user):
     msg = Message()
     msg.subject = "Restablece tu contraseña"
     msg.sender = (
-        p.MAIL_USERNAME
+        p.MAIL_TECH
     )  # Tomamos la dirección de email de los datos del usuario en la base de datos
     msg.recipients = [user.email]
     msg.html = render_template("auth/reset_email.html", user=user, token=token)
@@ -29,8 +29,8 @@ def send_modification_email(diskData):
     mail = Mail(config.app)
     msg = Message()
     msg.subject = "Solicitud de modificación de un disco"
-    msg.sender = p.MAIL_USERNAME
-    msg.recipients = [p.MAIL_USERNAME]
+    msg.sender = p.MAIL_TECH
+    msg.recipients = [p.MAIL_TECH]
     msg.html = render_template("collection/modify_mail.html", diskData=diskData)
     mail.send(msg)
 
