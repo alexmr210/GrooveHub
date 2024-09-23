@@ -459,6 +459,10 @@ td.limited {
     background: var(--naranja2) url(../img/trash.svg) center/2rem auto no-repeat;
 }
 
+.delete-btn {
+    background: var(--amarillo1) url(../img/trash.svg) center/2rem auto no-repeat;
+}
+
 /* PAGINACIÓN */
 
 .pagination {

@@ -13,12 +13,6 @@ engine = create_engine(database_url)
 connection = engine.connect()
 Base.metadata.create_all(engine)
 
-# @p.app.errorhandler(SQLAlchemyError)
-# def handle_db_error(error):
-#     connection.rollback()
-#     flash('Ha habido un error inesperado. Por favor, intntalo de nuevo más tarde.')
-#     return redirect(url_for('home'))
-
 # Creamos la sesión a través de la cual haremos las consultas
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -170,8 +164,10 @@ def db_insert_disk(
     return inserted
 
 def get_collection(usuario):
-    query = f"""SELECT A.ID_ARTISTA, A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO, ED.PAIS, EU.ID_USUARIO, ED.CARATULA FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA 
-        INNER JOIN EDICIONES_DISCO ED ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU ON ED.ID_EDICION=EU.ID_EDICION
+    query = f"""SELECT A.ID_ARTISTA, A.ARTISTA, D.ID_DISCO, D.TITULO, ED.ID_EDICION, ED.EDICION, ED.AGNO
+        ED.PAIS, EU.ID_USUARIO, ED.CARATULA FROM ARTISTAS A INNER JOIN DISCOS D ON A.ID_ARTISTA=D.ID_ARTISTA 
+        INNER JOIN EDICIONES_DISCO ED ON D.ID_DISCO=ED.ID_DISCO INNER JOIN EDICIONES_USUARIO EU
+        ON ED.ID_EDICION=EU.ID_EDICION
         WHERE EU.ID_USUARIO='{usuario}' ORDER BY D.TITULO ASC"""
     result = connection.execute(text(query))
     rows = result.fetchall()

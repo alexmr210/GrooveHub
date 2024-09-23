@@ -1,5 +1,4 @@
-import logging
-from flask import redirect, render_template, url_for, session
+from flask import redirect, render_template, send_from_directory, url_for, session
 from flask_login import LoginManager, login_required, current_user
 from flask_wtf import CSRFProtect
 from config import config as p
@@ -34,6 +33,11 @@ def handle_db_error(error):
 @config.app.route("/")
 def index():
     return redirect(url_for("auth.login"))
+
+@config.app.route('/download/<filename>')
+def open_pdf(filename):
+    # Cambia 'static/pdfs' al directorio donde guardaste tu PDF
+    return send_from_directory('static/pdf', filename, as_attachment=True)
 
 
 @config.app.route("/home")
