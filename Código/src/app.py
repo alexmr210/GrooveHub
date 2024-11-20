@@ -33,7 +33,7 @@ def handle_db_error(error):
 @config.app.route("/")
 def index():
     return redirect(url_for("auth.login"))
-
+    
 @config.app.route('/download/<filename>')
 def open_pdf(filename):
     # Cambia 'static/pdfs' al directorio donde guardaste tu PDF
